@@ -7,6 +7,7 @@ use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
+use Composer\Script\ScriptEvents;
 
 class AutoloadPlugin implements PluginInterface, EventSubscriberInterface
 {
@@ -18,7 +19,7 @@ class AutoloadPlugin implements PluginInterface, EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'pre-autoload-dump' => 'dumpAutoload',
+            ScriptEvents::PRE_AUTOLOAD_DUMP => 'dumpAutoload',
         );
     }
 
