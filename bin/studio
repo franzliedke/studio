@@ -3,9 +3,11 @@
 
 require __DIR__.'/../vendor/autoload.php';
 
+use Studio\Console\CreateCommand;
 use Studio\Console\LoadCommand;
 use Symfony\Component\Console\Application;
 
 $application = new Application();
+$application->add(new CreateCommand);
 $application->add(new LoadCommand);
 $application->run();
