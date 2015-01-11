@@ -2,6 +2,8 @@
 
 namespace Studio\Console;
 
+use Studio\Creator;
+use Studio\Package;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -9,6 +11,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CreateCommand extends Command
 {
+
+    protected $creator;
+
+
+    public function __construct(Creator $creator)
+    {
+        parent::__construct();
+
+        $this->creator = $creator;
+    }
+
     protected function configure()
     {
         $this
@@ -23,6 +36,8 @@ class CreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('Package created for you.');
+        $directory = $this->creator->create(new Package('fluxbb', 'core'));
+
+        $output->writeln("<info>Package directory $directory created.</info>");
     }
 }
