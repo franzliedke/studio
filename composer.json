@@ -16,5 +16,6 @@
     },
     "extra": {
         "class": "Studio\\Composer\\AutoloadPlugin"
-    }
+    },
+    "bin": ["bin/studio"]
 }
