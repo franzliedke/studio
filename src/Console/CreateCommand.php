@@ -36,8 +36,20 @@ class CreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $directory = $this->creator->create(new Package('fluxbb', 'core'));
+        $directory = $this->creator->create($this->makePackage($input));
 
         $output->writeln("<info>Package directory $directory created.</info>");
+    }
+
+    protected function makePackage(InputInterface $input)
+    {
+        $name = $input->getArgument('package');
+
+        if (! str_contains($name, '/')) {
+            throw new \InvalidArgumentException('Invalid package name');
+        }
+
+        list($vendor, $package) = explode('/', $name, 2);
+        return new Package($vendor, $package);
     }
 }
