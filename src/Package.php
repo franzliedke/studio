@@ -26,4 +26,9 @@ class Package
         return $this->name;
     }
 
+    public function equals(Package $other)
+    {
+        return $this->vendor == $other->vendor && $this->name == $other->name;
+    }
+
 }
