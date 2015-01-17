@@ -6,9 +6,14 @@ use Studio\Package;
 
 class Config
 {
+    /**
+     * @var StorageInterface
+     */
+    protected $storage;
+
     protected $packages;
 
-    protected $storage;
+    protected $loaded = false;
 
 
     public function __construct(StorageInterface $storage)
@@ -18,12 +23,18 @@ class Config
 
     public function getPackages()
     {
+        if (! $this->loaded) {
+            $this->packages = $this->storage->load();
+            $this->loaded = true;
+        }
+
         return $this->packages;
     }
 
     public function addPackage(Package $package)
     {
         $this->packages[] = $package;
+        $this->storage->store($this->packages);
     }
 
     public function removePackage(Package $package)
@@ -31,5 +42,6 @@ class Config
         $this->packages = array_filter($this->packages, function (Package $element) use ($package) {
             return ! $package->equals($element);
         });
+        $this->storage->store($this->packages);
     }
 }
