@@ -4,7 +4,11 @@ A workbench for developing Composer packages.
 
 ## Installation
 
-With Composer: `composer global require franzliedke/studio`
+Studio can be installed per project or globally, with Composer:
+
+Per project: `composer require franzliedke/studio`
+
+Globally: `composer global require franzliedke/studio`
 
 ## Usage
 
