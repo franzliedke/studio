@@ -10,6 +10,8 @@ class FileStorage implements StorageInterface
     public function __construct($file)
     {
         $this->file = $file;
+
+        $this->ensureFile();
     }
 
     public function store($packages)
@@ -19,12 +21,17 @@ class FileStorage implements StorageInterface
 
     public function load()
     {
-        if (file_exists($this->file)) {
-            $contents = json_decode(file_get_contents($this->file), true);
-            return $contents['packages'];
-        }
+        $contents = json_decode(file_get_contents($this->file), true);
+        return $contents['packages'];
+    }
 
-        return [];
+    protected function ensureFile()
+    {
+        if (file_exists($this->file)) return;
+
+        // If the config file does not exist, we simply create one
+        // with an empty list of packages.
+        $this->store([]);
     }
 
     protected function writeToFile(array $data)
