@@ -16,6 +16,11 @@ class Package
         $this->name = $name;
     }
 
+    public function getComposerId()
+    {
+        return $this->vendor . '/' . $this->name;
+    }
+
     public function getVendor()
     {
         return $this->vendor;

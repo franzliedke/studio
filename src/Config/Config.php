@@ -33,7 +33,10 @@ class Config
 
     public function addPackage(Package $package)
     {
-        $this->packages[] = $package;
+        // Ensure our packages are loaded
+        $this->getPackages();
+
+        $this->packages[] = $package->getComposerId();
         $this->storage->store($this->packages);
     }
 
