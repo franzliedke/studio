@@ -4,12 +4,16 @@
 require __DIR__.'/../vendor/autoload.php';
 
 use Illuminate\Filesystem\Filesystem;
+use Studio\Config\Config;
+use Studio\Config\FileStorage;
 use Studio\Console\CreateCommand;
 use Studio\Console\LoadCommand;
 use Studio\Creator;
 use Symfony\Component\Console\Application;
 
+$config = new Config(new FileStorage(__DIR__.'/../studio.json'));
+
 $application = new Application();
-$application->add(new CreateCommand(new Creator(new Filesystem)));
+$application->add(new CreateCommand($config, new Creator(new Filesystem)));
 $application->add(new LoadCommand);
 $application->run();
