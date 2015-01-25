@@ -50,12 +50,14 @@ class CreateCommand extends Command
     protected function makePackage(InputInterface $input)
     {
         $name = $input->getArgument('package');
+        $author = 'Franz Liedke';
+        $email = 'franz@email.org';
 
         if (! str_contains($name, '/')) {
             throw new \InvalidArgumentException('Invalid package name');
         }
 
         list($vendor, $package) = explode('/', $name, 2);
-        return new Package($vendor, $package);
+        return new Package($vendor, $package, $author, $email);
     }
 }

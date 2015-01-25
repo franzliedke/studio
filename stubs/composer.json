@@ -1,5 +1,5 @@
 {
-    "name": "{{lower_vendor}}/{{lower_package}}",
+    "name": "{{composer_id}}",
     "description": "",
     "authors": [
         {
@@ -12,7 +12,7 @@
     },
     "autoload": {
         "psr-4": {
-            "{{vendor}}\\{{package}}\\": "src/"
+            "{{vendor}}\\{{name}}\\": "src/"
         }
     },
     "minimum-stability": "stable"

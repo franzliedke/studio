@@ -9,11 +9,17 @@ class Package
 
     protected $name;
 
+    protected $author;
 
-    public function __construct($vendor, $name)
+    protected $email;
+
+
+    public function __construct($vendor, $name, $author, $email)
     {
         $this->vendor = $vendor;
         $this->name = $name;
+        $this->author = $author;
+        $this->email = $email;
     }
 
     public function getComposerId()
@@ -29,6 +35,16 @@ class Package
     public function getName()
     {
         return $this->name;
+    }
+
+    public function getAuthor()
+    {
+        return $this->author;
+    }
+
+    public function getEmail()
+    {
+        return $this->email;
     }
 
     public function equals(Package $other)
