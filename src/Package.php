@@ -49,7 +49,7 @@ class Package
 
     public function equals(Package $other)
     {
-        return $this->vendor == $other->vendor && $this->name == $other->name;
+        return $this->getComposerId() == $other->getComposerId();
     }
 
 }
