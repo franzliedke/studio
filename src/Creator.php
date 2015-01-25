@@ -91,12 +91,7 @@ class Creator
      */
     protected function writeComposerFile(Package $package)
     {
-        $stub = $this->getStub('composer.json');
-        $target = $this->getTargetPath($package, 'composer.json');
-
-        $stub = $this->formatPackageStub($package, $stub);
-
-        $this->files->put($target, $stub);
+        $this->copy($package, 'composer.json');
     }
 
     /**
@@ -151,6 +146,8 @@ class Creator
         $target = $this->getTargetPath($package, $targetName);
 
         $this->files->copy($source, $target);
+
+        $this->replacePlaceholders($target, $package);
     }
 
     protected function getStub($stubFile)
@@ -174,23 +171,6 @@ class Creator
     }
 
     /**
-     * Format a generic package stub file.
-     *
-     * @param  Package  $package
-     * @param  string  $stub
-     * @return string
-     */
-    protected function formatPackageStub(Package $package, $stub)
-    {
-        foreach (get_object_vars($package) as $key => $value)
-        {
-            $stub = str_replace('{{'.snake_case($key).'}}', $value, $stub);
-        }
-
-        return $stub;
-    }
-
-    /**
      * Create a workbench directory for the package.
      *
      * @param  Package  $package
@@ -210,6 +190,24 @@ class Creator
         }
 
         throw new \InvalidArgumentException("Package exists.");
+    }
+
+    protected function replacePlaceholders($target, Package $package)
+    {
+        $contents = $this->files->get($target);
+
+        $contents = preg_replace_callback(
+            '/\{\{([^}]+)\}\}/',
+            function ($matches) use ($package) {
+                $method = ucfirst(camel_case($matches[1]));
+                $method = "get$method";
+
+                return $package->$method();
+            },
+            $contents
+        );
+
+        $this->files->put($target, $contents);
     }
 
 }
