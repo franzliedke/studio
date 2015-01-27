@@ -40,6 +40,14 @@ class Config
         $this->storage->store($this->packages);
     }
 
+    public function hasPackages()
+    {
+        // Ensure our packages are loaded
+        $this->getPackages();
+
+        return ! empty($this->packages);
+    }
+
     public function removePackage(Package $package)
     {
         $this->packages = array_filter($this->packages, function (Package $element) use ($package) {
