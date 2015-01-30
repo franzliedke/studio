@@ -27,23 +27,16 @@ class AutoloadPlugin implements PluginInterface, EventSubscriberInterface
 
     public function dumpAutoload(Event $event)
     {
-        if ($this->hasStudioPackages($event->getComposer())) {
-            // TODO: Add autoloading rules
-        }
-    }
-
-    /**
-     * Determine whether the current package has any Studio packages to keep track of.
-     *
-     * @param Composer $composer
-     * @return bool
-     */
-    protected function hasStudioPackages(Composer $composer)
-    {
-        $path = $composer->getPackage()->getTargetDir();
+        $path = $event->getComposer()->getPackage()->getTargetDir();
         $studioFile = "$path/studio.json";
 
-        return $this->getConfig($studioFile)->hasPackages();
+        $config = $this->getConfig($studioFile);
+
+        if ($config->hasPackages()) {
+            $packages = $config->getPackages();
+
+            // TODO: Add autoloading rules!
+        }
     }
 
     /**
