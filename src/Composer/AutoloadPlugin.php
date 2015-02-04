@@ -27,10 +27,10 @@ class AutoloadPlugin implements PluginInterface, EventSubscriberInterface
 
     public function dumpAutoload(Event $event)
     {
+        if ($this->runningInGlobalHomeDir($event)) return;
+
         $path = $event->getComposer()->getPackage()->getTargetDir();
         $studioFile = "$path/studio.json";
-
-        if ($this->runningInGlobalHomeDir($event)) return;
 
         $config = $this->getConfig($studioFile);
 
