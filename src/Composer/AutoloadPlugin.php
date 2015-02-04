@@ -30,6 +30,8 @@ class AutoloadPlugin implements PluginInterface, EventSubscriberInterface
         $path = $event->getComposer()->getPackage()->getTargetDir();
         $studioFile = "$path/studio.json";
 
+        if ($this->runningInGlobalHomeDir($event)) return;
+
         $config = $this->getConfig($studioFile);
 
         if ($config->hasPackages()) {
@@ -48,5 +50,13 @@ class AutoloadPlugin implements PluginInterface, EventSubscriberInterface
     protected function getConfig($file)
     {
         return new Config(new FileStorage($file));
+    }
+
+    protected function runningInGlobalHomeDir(Event $event)
+    {
+        $current = getcwd();
+        $home = $event->getComposer()->getConfig()->get('home');
+
+        return $current == $home;
     }
 }
