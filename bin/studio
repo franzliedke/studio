@@ -11,7 +11,13 @@ use Studio\Console\LoadCommand;
 use Studio\Creator;
 use Symfony\Component\Console\Application;
 
-$config = new Config(new FileStorage(__DIR__.'/../studio.json'));
+$studioFile = getcwd().'/studio.json';
+
+if (!file_exists($studioFile)) {
+	throw new RuntimeException('There is no studio.json file in this directory.');
+}
+
+$config = new Config(new FileStorage($studioFile));
 
 $application = new Application();
 $application->add(new CreateCommand($config, new Creator(new Filesystem)));
