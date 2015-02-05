@@ -36,7 +36,7 @@ class Config
         // Ensure our packages are loaded
         $this->getPackages();
 
-        $this->packages[] = $package->getComposerId();
+        $this->packages[$package->getComposerId()] = $package->getPath();
         $this->storage->store($this->packages);
     }
 
@@ -50,9 +50,11 @@ class Config
 
     public function removePackage(Package $package)
     {
-        $this->packages = array_filter($this->packages, function (Package $element) use ($package) {
-            return ! $package->equals($element);
-        });
-        $this->storage->store($this->packages);
+        $key = $package->getComposerId();
+
+        if (isset($this->packages[$key])) {
+            unset($this->packages[$key]);
+            $this->storage->store($this->packages);
+        }
     }
 }

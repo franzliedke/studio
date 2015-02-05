@@ -49,9 +49,7 @@ class CreateCommand extends Command
     {
         $package = $this->makePackage($input);
 
-        $defaultPath = getcwd() . '/' . $package->getName();
-        $path = $input->getOption('path') ?: $defaultPath;
-
+        $path = $package->getPath();
         $this->creator->create($package, $path);
         $this->config->addPackage($package);
 
@@ -69,6 +67,9 @@ class CreateCommand extends Command
         }
 
         list($vendor, $package) = explode('/', $name, 2);
-        return new Package($vendor, $package, $author, $email);
+        $defaultPath = getcwd() . '/' . $package;
+        $path = $input->getOption('path') ?: $defaultPath;
+
+        return new Package($vendor, $package, $author, $email, $path);
     }
 }
