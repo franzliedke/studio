@@ -11,8 +11,8 @@
         "composer-plugin-api": "1.0.0",
         "illuminate/filesystem": "~4.2.0",
         "illuminate/support": "~4.2.0",
-        "symfony/console": "~2.5.0",
-        "symfony/finder": "~2.5.0"
+        "symfony/console": "~2.5",
+        "symfony/finder": "~2.5"
     },
     "require-dev": {
         "composer/composer": "dev-master"
