@@ -5,10 +5,7 @@
     "autoload": {
         "psr-4": {
             "Studio\\": "src"
-        },
-        "files": [
-            "src/autoload.php"
-        ]
+        }
     },
     "require": {
         "composer-plugin-api": "1.0.0",

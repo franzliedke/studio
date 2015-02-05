@@ -10,6 +10,7 @@ use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
 use Studio\Config\Config;
 use Studio\Config\FileStorage;
+use Symfony\Component\Finder\Finder;
 
 class AutoloadPlugin implements PluginInterface, EventSubscriberInterface
 {
@@ -35,9 +36,7 @@ class AutoloadPlugin implements PluginInterface, EventSubscriberInterface
         $config = $this->getConfig($studioFile);
 
         if ($config->hasPackages()) {
-            $packages = $config->getPackages();
-
-            // TODO: Add autoloading rules!
+            $this->autoloadFrom($config->getPackages());
         }
     }
 
@@ -58,5 +57,22 @@ class AutoloadPlugin implements PluginInterface, EventSubscriberInterface
         $home = $event->getComposer()->getConfig()->get('home');
 
         return $current == $home;
+    }
+
+    protected function autoloadFrom(array $directories)
+    {
+        $finder = new Finder();
+
+        // Find all Composer autoloader files in the supervised packages' directories
+        // so that we can include and setup all of their dependencies.
+        $autoloaders = $finder->in($directories)
+                              ->files()
+                              ->name('autoload.php')
+                              ->depth('<= 3')
+                              ->followLinks();
+
+        foreach ($autoloaders as $file) {
+            // TODO: Include $file from our vendor/autoload.php
+        }
     }
 }
