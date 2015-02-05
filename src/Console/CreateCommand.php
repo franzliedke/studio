@@ -8,6 +8,7 @@ use Studio\Package;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CreateCommand extends Command
@@ -35,16 +36,26 @@ class CreateCommand extends Command
                 'package',
                 InputArgument::REQUIRED,
                 'The name of the package to create'
+            )
+            ->addOption(
+                'path',
+                'p',
+                InputOption::VALUE_REQUIRED,
+                'If set, this will overwrite the default path'
             );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $package = $this->makePackage($input);
-        $directory = $this->creator->create($package);
+
+        $defaultPath = getcwd() . '/' . $package->getName();
+        $path = $input->getOption('path') ?: $defaultPath;
+
+        $this->creator->create($package, $path);
         $this->config->addPackage($package);
 
-        $output->writeln("<info>Package directory $directory created.</info>");
+        $output->writeln("<info>Package directory $path created.</info>");
     }
 
     protected function makePackage(InputInterface $input)

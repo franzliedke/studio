@@ -32,127 +32,118 @@ class Creator
     /**
      * Create a new package stub.
      *
-     * @param  Package  $package
-     * @return string
+     * @param Package $package
+     * @param string $path
+     * @return void
      */
-    public function create(Package $package)
+    public function create(Package $package, $path)
     {
-        $directory = $this->createDirectory($package);
+        $this->createDirectory($path);
 
         foreach ($this->blocks as $block)
         {
-            $this->{"write{$block}"}($package);
+            $this->{"write{$block}"}($package, $path);
         }
-
-        return $directory;
     }
 
     /**
      * Write the support files to the package root.
      *
-     * @param  Package  $package
+     * @param Package $package
+     * @param string $path
      * @return void
      */
-    public function writeSupportFiles(Package $package)
+    public function writeSupportFiles(Package $package, $path)
     {
         foreach (array('PhpUnit', 'Travis', 'Composer', 'Ignore') as $file)
         {
-            $this->{"write{$file}File"}($package);
+            $this->{"write{$file}File"}($package, $path);
         }
     }
 
     /**
      * Write the PHPUnit stub file.
      *
-     * @param  Package  $package
+     * @param Package $package
+     * @param string $path
      * @return void
      */
-    protected function writePhpUnitFile(Package $package)
+    protected function writePhpUnitFile(Package $package, $path)
     {
-        $this->copy($package, 'phpunit.xml');
+        $this->copy($package, $path, 'phpunit.xml');
     }
 
     /**
      * Write the Travis stub file.
      *
-     * @param  Package  $package
+     * @param Package $package
+     * @param string $path
      * @return void
      */
-    protected function writeTravisFile(Package $package)
+    protected function writeTravisFile(Package $package, $path)
     {
-        $this->copy($package, '.travis.yml');
+        $this->copy($package, $path, '.travis.yml');
     }
 
     /**
      * Write the Composer.json stub file.
      *
-     * @param  Package  $package
+     * @param Package $package
+     * @param string $path
      * @return void
      */
-    protected function writeComposerFile(Package $package)
+    protected function writeComposerFile(Package $package, $path)
     {
-        $this->copy($package, 'composer.json');
+        $this->copy($package, $path, 'composer.json');
     }
 
     /**
      * Write the stub .gitignore file for the package.
      *
-     * @param  Package  $package
+     * @param Package $package
+     * @param string $path
      * @return void
      */
-    public function writeIgnoreFile(Package $package)
+    public function writeIgnoreFile(Package $package, $path)
     {
-        $this->copy($package, 'gitignore.txt', '.gitignore');
+        $this->copy($package, $path, 'gitignore.txt', '.gitignore');
     }
 
     /**
      * Create the test directory for the package.
      *
-     * @param  Package  $package
+     * @param Package $package
+     * @param string $path
      * @return void
      */
-    public function writeTestDirectory(Package $package)
+    public function writeTestDirectory(Package $package, $path)
     {
-        $testDirectory = $this->getTargetPath($package, 'tests');
-        $this->files->makeDirectory($testDirectory);
-
-        $targetPath = $this->getTargetPath($package, 'tests/.gitkeep');
-        $this->files->put($targetPath, '');
+        $this->createDirectory("$path/tests");
+        $this->files->put("$path/tests/.gitkeep", '');
     }
 
     /**
      * Create the main source directory for the package.
      *
-     * @param  Package  $package
-     * @return string
+     * @param Package $package
+     * @param string $path
+     * @return void
      */
-    protected function writeClassDirectory(Package $package)
+    protected function writeClassDirectory(Package $package, $path)
     {
-        $path = $this->getPackageDirectory($package) . '/src';
-
-        if ( ! $this->files->isDirectory($path))
-        {
-            $this->files->makeDirectory($path, 0777, true);
-        }
-
-        return $path;
+        $this->createDirectory("$path/src");
     }
 
-    protected function copy(Package $package, $stubFile, $targetName = null)
+    protected function copy(Package $package, $path, $stubFile, $targetName = null)
     {
         $targetName = $targetName ?: $stubFile;
 
         $source = $this->getStubPath($stubFile);
-        $target = $this->getTargetPath($package, $targetName);
+        $target = "$path/$targetName";
 
         $this->files->copy($source, $target);
 
         $this->replacePlaceholders($target, $package);
-    }
-
-    protected function getStub($stubFile)
-    {
-        return $this->files->get($this->getStubPath($stubFile));
     }
 
     protected function getStubPath($stubFile)
@@ -160,36 +151,15 @@ class Creator
         return __DIR__ . '/../stubs/' . $stubFile;
     }
 
-    protected function getTargetPath(Package $package, $targetFile)
-    {
-        return $this->getPackageDirectory($package) . '/' . $targetFile;
-    }
-
-    protected function getPackageDirectory(Package $package)
-    {
-        return __DIR__ . '/../' . $package->getVendor() . '/' . $package->getName();
-    }
-
     /**
-     * Create a workbench directory for the package.
+     * Create the given directory.
      *
-     * @param  Package  $package
-     * @return string
-     *
-     * @throws \InvalidArgumentException
+     * @param string $path
+     * @return void
      */
-    protected function createDirectory(Package $package)
+    protected function createDirectory($path)
     {
-        $fullPath = $this->getPackageDirectory($package);
-
-        if ( ! $this->files->isDirectory($fullPath))
-        {
-            $this->files->makeDirectory($fullPath, 0777, true);
-
-            return $fullPath;
-        }
-
-        throw new \InvalidArgumentException("Package exists.");
+        $this->files->makeDirectory($path, 0777, true);
     }
 
     protected function replacePlaceholders($target, Package $package)
