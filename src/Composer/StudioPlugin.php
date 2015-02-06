@@ -28,8 +28,6 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
 
     public function dumpAutoload(Event $event)
     {
-        if ($this->runningInGlobalHomeDir($event)) return;
-
         $path = $event->getComposer()->getPackage()->getTargetDir();
         $studioFile = "{$path}studio.json";
 
@@ -48,14 +46,6 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
     protected function getConfig($file)
     {
         return new Config(new FileStorage($file));
-    }
-
-    protected function runningInGlobalHomeDir(Event $event)
-    {
-        $current = getcwd();
-        $home = $event->getComposer()->getConfig()->get('home');
-
-        return $current == $home;
     }
 
     protected function autoloadFrom(array $directories)
