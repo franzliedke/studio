@@ -3,7 +3,7 @@
 
 require __DIR__.'/../../../autoload.php';
 
-use Studio\Composer\TaskRunner;
+use Studio\Shell\TaskRunner;
 use Studio\Config\Config;
 use Studio\Config\FileStorage;
 use Studio\Console\CreateCommand;

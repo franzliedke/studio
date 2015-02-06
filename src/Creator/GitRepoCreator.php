@@ -2,6 +2,9 @@
 
 namespace Studio\Creator;
 
+use Studio\Package;
+use Studio\Shell\TaskRunner;
+
 class GitRepoCreator implements CreatorInterface
 {
 
@@ -9,11 +12,17 @@ class GitRepoCreator implements CreatorInterface
 
     protected $path;
 
+    /**
+     * @var TaskRunner
+     */
+    protected $shell;
 
-    public function __construct($repo, $path)
+
+    public function __construct($repo, $path, TaskRunner $shell)
     {
         $this->repo = $repo;
         $this->path = $path;
+        $this->shell = $shell;
     }
 
     /**
@@ -23,7 +32,30 @@ class GitRepoCreator implements CreatorInterface
      */
     public function create()
     {
-        // TODO: Clone repository into path.
+        $this->cloneRepository();
+
+        return $this->makePackage();
+    }
+
+    protected function cloneRepository()
+    {
+        $task = "git clone $this->repo $this->path";
+        $this->shell->run($task);
+    }
+
+    protected function makePackage()
+    {
+        $composer = json_decode(file_get_contents($this->path . '/composer.json'));
+
+        list($vendor, $name) = explode('/', $composer->name, 2);
+
+        return new Package(
+            $vendor,
+            $name,
+            $composer->authors[0]->name,
+            $composer->authors[0]->email,
+            $this->path
+        );
     }
 
 }

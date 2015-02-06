@@ -1,6 +1,6 @@
 <?php
 
-namespace Studio\Composer;
+namespace Studio\Shell;
 
 use Symfony\Component\Process\Process;
 
@@ -9,7 +9,7 @@ class TaskRunner
 
     public function run($task, $directory = null)
     {
-        $process = new Process("composer $task", $directory);
+        $process = new Process("$task", $directory);
         $process->run();
 
         if (! $process->isSuccessful()) {

@@ -3,7 +3,7 @@
 namespace Studio\Console;
 
 use Illuminate\Filesystem\Filesystem;
-use Studio\Composer\TaskRunner;
+use Studio\Shell\TaskRunner;
 use Studio\Config\Config;
 use Studio\Creator\CreatorInterface;
 use Studio\Creator\GitRepoCreator;
@@ -20,15 +20,15 @@ class CreateCommand extends Command
 
     protected $config;
 
-    protected $composer;
+    protected $shell;
 
 
-    public function __construct(Config $config, TaskRunner $composer)
+    public function __construct(Config $config, TaskRunner $shell)
     {
         parent::__construct();
 
         $this->config = $config;
-        $this->composer = $composer;
+        $this->shell = $shell;
     }
 
     protected function configure()
@@ -66,11 +66,11 @@ class CreateCommand extends Command
         $output->writeln("<info>Package directory $path created.</info>");
 
         $output->writeln("<comment>Running composer install for new package...</comment>");
-        $this->composer->run('install', $package->getPath());
+        $this->shell->run('composer install', $package->getPath());
         $output->writeln("<info>Package successfully created.</info>");
 
         $output->writeln("<comment>Dumping autoloads...</comment>");
-        $this->composer->run('dump-autoload');
+        $this->shell->run('composer dump-autoload');
         $output->writeln("<info>Autoloads successfully generated.</info>");
     }
 
@@ -92,7 +92,7 @@ class CreateCommand extends Command
         $path = $input->getOption('path') ?: $package;
 
         if ($input->hasOption('git')) {
-            return new GitRepoCreator($input->getOption('git'), $path);
+            return new GitRepoCreator($input->getOption('git'), $path, $this->shell);
         } else {
             $author = 'Franz Liedke';
             $email = 'franz@email.org';
