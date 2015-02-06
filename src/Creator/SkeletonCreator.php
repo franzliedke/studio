@@ -14,161 +14,91 @@ class SkeletonCreator implements CreatorInterface
     protected $files;
 
     /**
-     * The building blocks of the package.
-     *
-     * @param  array
+     * @var Package
      */
-    protected $blocks = [
-        'SupportFiles',
-        'ClassDirectory',
-        'TestDirectory',
+    protected $package;
+
+    protected $directoriesToCreate = [
+        '',
+        'src',
+        'tests',
+    ];
+
+    protected $filesToCopy = [
+        'phpunit.xml',
+        '.travis.yml',
+        'composer.json',
+        ['gitignore.txt', '.gitignore'],
     ];
 
 
-    public function __construct(Filesystem $files)
+    public function __construct(Filesystem $files, Package $package)
     {
         $this->files = $files;
+        $this->package = $package;
     }
 
     /**
-     * Create a new package stub.
+     * Create the new package.
      *
-     * @param Package $package
-     * @return void
+     * @return \Studio\Package
      */
-    public function create(Package $package)
+    public function create()
     {
-        $this->createDirectory($package->getPath());
+        $this->createDirectories();
+        $this->copyFiles();
 
-        foreach ($this->blocks as $block)
-        {
-            $this->{"write{$block}"}($package);
+        return $this->package;
+    }
+
+    protected function createDirectories()
+    {
+        foreach ($this->directoriesToCreate as $directory) {
+            $path = $this->package->getPath() . '/' . $directory;
+            $this->files->makeDirectory($path, 0777, true);
         }
     }
 
-    /**
-     * Write the support files to the package root.
-     *
-     * @param Package $package
-     * @return void
-     */
-    public function writeSupportFiles(Package $package)
+    protected function copyFiles()
     {
-        foreach (['PhpUnit', 'Travis', 'Composer', 'Ignore'] as $file)
-        {
-            $this->{"write{$file}File"}($package);
+        foreach ($this->filesToCopy as $files) {
+            $files = (array) $files;
+
+            $source = $files[0];
+            $target = isset($files[1]) ? $files[1] : $source;
+
+            $this->copy($source, $target);
         }
     }
 
-    /**
-     * Write the PHPUnit stub file.
-     *
-     * @param Package $package
-     * @return void
-     */
-    protected function writePhpUnitFile(Package $package)
+    protected function copy($stubFile, $targetFile)
     {
-        $this->copy($package, 'phpunit.xml');
-    }
-
-    /**
-     * Write the Travis stub file.
-     *
-     * @param Package $package
-     * @return void
-     */
-    protected function writeTravisFile(Package $package)
-    {
-        $this->copy($package, '.travis.yml');
-    }
-
-    /**
-     * Write the Composer.json stub file.
-     *
-     * @param Package $package
-     * @return void
-     */
-    protected function writeComposerFile(Package $package)
-    {
-        $this->copy($package, 'composer.json');
-    }
-
-    /**
-     * Write the stub .gitignore file for the package.
-     *
-     * @param Package $package
-     * @return void
-     */
-    public function writeIgnoreFile(Package $package)
-    {
-        $this->copy($package, 'gitignore.txt', '.gitignore');
-    }
-
-    /**
-     * Create the test directory for the package.
-     *
-     * @param Package $package
-     * @return void
-     */
-    public function writeTestDirectory(Package $package)
-    {
-        $path = $package->getPath();
-        $this->createDirectory("$path/tests");
-        $this->files->put("$path/tests/.gitkeep", '');
-    }
-
-    /**
-     * Create the main source directory for the package.
-     *
-     * @param Package $package
-     * @return void
-     */
-    protected function writeClassDirectory(Package $package)
-    {
-        $path = $package->getPath();
-        $this->createDirectory("$path/src");
-    }
-
-    protected function copy(Package $package, $stubFile, $targetName = null)
-    {
-        $path = $package->getPath();
-        $targetName = $targetName ?: $stubFile;
+        $path = $this->package->getPath();
 
         $source = $this->getStubPath($stubFile);
-        $target = "$path/$targetName";
+        $target = "$path/$targetFile";
 
         $this->files->copy($source, $target);
 
-        $this->replacePlaceholders($target, $package);
+        $this->replacePlaceholders($target);
     }
 
     protected function getStubPath($stubFile)
     {
-        return __DIR__ . '/../stubs/' . $stubFile;
+        return __DIR__ . '/../../stubs/' . $stubFile;
     }
 
-    /**
-     * Create the given directory.
-     *
-     * @param string $path
-     * @return void
-     */
-    protected function createDirectory($path)
-    {
-        $this->files->makeDirectory($path, 0777, true);
-    }
-
-    protected function replacePlaceholders($target, Package $package)
+    protected function replacePlaceholders($target)
     {
         $contents = $this->files->get($target);
 
         $contents = preg_replace_callback(
             '/\{\{([^}]+)\}\}/',
-            function ($matches) use ($package) {
+            function ($matches) {
                 $method = ucfirst(camel_case($matches[1]));
                 $method = "get$method";
 
-                return $package->$method();
+                return $this->package->$method();
             },
             $contents
         );

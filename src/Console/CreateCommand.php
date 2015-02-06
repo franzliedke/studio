@@ -56,10 +56,9 @@ class CreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $package = $this->makePackage($input);
         $creator = $this->makeCreator($input);
 
-        $creator->create($package);
+        $package = $creator->create();
         $this->config->addPackage($package);
 
         $path = $package->getPath();
@@ -96,6 +95,8 @@ class CreateCommand extends Command
      */
     protected function makeCreator(InputInterface $input)
     {
-        return new SkeletonCreator(new Filesystem);
+        $package = $this->makePackage($input);
+
+        return new SkeletonCreator(new Filesystem, $package);
     }
 }

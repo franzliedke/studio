@@ -2,17 +2,14 @@
 
 namespace Studio\Creator;
 
-use Studio\Package;
-
 interface CreatorInterface
 {
 
     /**
-     * Create a new package stub.
+     * Create the new package.
      *
-     * @param Package $package
-     * @return void
+     * @return \Studio\Package
      */
-    public function create(Package $package);
+    public function create();
 
 }
