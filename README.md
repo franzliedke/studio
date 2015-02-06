@@ -12,10 +12,10 @@ It will take care of autoloading your library's dependencies, and you won't have
 Studio can be installed per project or globally, with Composer:
 
 Per project: `composer require --dev franzliedke/studio`
-Use it: `vendor/bin/studio`
+(use as `vendor/bin/studio`)
 
 Globally: `composer global require franzliedke/studio`
-Use it: `studio`
+(use as `studio`)
 
 ## Usage
 
