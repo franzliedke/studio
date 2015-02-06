@@ -12,7 +12,7 @@ use Studio\Config\Config;
 use Studio\Config\FileStorage;
 use Symfony\Component\Finder\Finder;
 
-class AutoloadPlugin implements PluginInterface, EventSubscriberInterface
+class StudioPlugin implements PluginInterface, EventSubscriberInterface
 {
     public function activate(Composer $composer, IOInterface $io)
     {
