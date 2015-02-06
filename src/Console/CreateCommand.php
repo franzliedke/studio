@@ -67,8 +67,11 @@ class CreateCommand extends Command
         $output->writeln("<comment>Running composer install for new package...</comment>");
         $result = $this->composer->run('install', $package->getPath());
         $output->write($result);
-
         $output->writeln("<info>Package successfully created.</info>");
+
+        $output->writeln("<comment>Dumping autoloads...</comment>");
+        $this->composer->run('dump-autoload');
+        $output->writeln("<info>Autoloads successfully generated.</info>");
     }
 
     protected function makePackage(InputInterface $input)

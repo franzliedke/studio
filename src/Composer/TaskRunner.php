@@ -7,7 +7,7 @@ use Symfony\Component\Process\Process;
 class TaskRunner
 {
 
-    public function run($task, $directory)
+    public function run($task, $directory = null)
     {
         $process = new Process("composer $task", $directory);
         $process->run();
