@@ -1,27 +1,37 @@
 # studio
 
-A workbench for developing Composer packages.
+Develop your Composer libraries with style.
+
+This package makes it easy to develop Composer packages while using them.
+
+Instead of installing the packages you're actively working on as a dependency, use Studio to manage your libraries.
+It will take care of autoloading your library's dependencies, and you won't have to develop in the `vendor` directory.
 
 ## Installation
 
 Studio can be installed per project or globally, with Composer:
 
-Per project: `composer require franzliedke/studio`
+Per project: `composer require --dev franzliedke/studio`
+Use it: `vendor/bin/studio`
 
 Globally: `composer global require franzliedke/studio`
+Use it: `studio`
 
 ## Usage
 
 ### Create a new package skeleton
 
-    studio create my/package
+    studio create foo/bar --path baz
 
-Packages will be created in a directory named after the package. In above example, the new package folder would be
-created in the `package` subdirectory of your application.
+This command creates a skeleton for a new Composer package, already filled with some helpful files to get you started.
+In the above example, we're creating the `foo/bar` package, which will be loaded from the folder `baz` in your project root.
+All its dependencies will be available when using Composer.
 
-### Add a package to the autoloader list
+The `--path` parameter can be omitted.
+The package would then be created in the `bar` directory.
 
-    studio load my/package
+### Manage existing packages by cloning a Git repository
 
-This will add the package to a `studio.json` file in your project's root directory.
-It's dependencies will then be made autoloadable.
+    studio create foo/bar --git git@github.com:me/myrepo.git
+
+This will clone the Git repository to the `bar` directory and install its dependencies.
