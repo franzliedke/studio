@@ -10,7 +10,7 @@ class TaskRunner
     public function run($task, $directory = null)
     {
         $process = new Process("$task", $directory);
-        $process->setTimeout(600);
+        $process->setTimeout(3600);
         $process->run();
 
         if (! $process->isSuccessful()) {
