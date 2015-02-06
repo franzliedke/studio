@@ -17,7 +17,7 @@
         "symfony/process": "~2.5"
     },
     "extra": {
-        "class": "Studio\\Composer\\AutoloadPlugin"
+        "class": "Studio\\Composer\\StudioPlugin"
     },
     "bin": ["bin/studio"]
 }
