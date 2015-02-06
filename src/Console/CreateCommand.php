@@ -49,10 +49,10 @@ class CreateCommand extends Command
     {
         $package = $this->makePackage($input);
 
-        $path = $package->getPath();
-        $this->creator->create($package, $path);
+        $this->creator->create($package);
         $this->config->addPackage($package);
 
+        $path = $package->getPath();
         $output->writeln("<info>Package directory $path created.</info>");
     }
 

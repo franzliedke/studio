@@ -33,16 +33,15 @@ class Creator
      * Create a new package stub.
      *
      * @param Package $package
-     * @param string $path
      * @return void
      */
-    public function create(Package $package, $path)
+    public function create(Package $package)
     {
-        $this->createDirectory($path);
+        $this->createDirectory($package->getPath());
 
         foreach ($this->blocks as $block)
         {
-            $this->{"write{$block}"}($package, $path);
+            $this->{"write{$block}"}($package);
         }
     }
 
@@ -50,14 +49,13 @@ class Creator
      * Write the support files to the package root.
      *
      * @param Package $package
-     * @param string $path
      * @return void
      */
-    public function writeSupportFiles(Package $package, $path)
+    public function writeSupportFiles(Package $package)
     {
         foreach (array('PhpUnit', 'Travis', 'Composer', 'Ignore') as $file)
         {
-            $this->{"write{$file}File"}($package, $path);
+            $this->{"write{$file}File"}($package);
         }
     }
 
@@ -65,59 +63,55 @@ class Creator
      * Write the PHPUnit stub file.
      *
      * @param Package $package
-     * @param string $path
      * @return void
      */
-    protected function writePhpUnitFile(Package $package, $path)
+    protected function writePhpUnitFile(Package $package)
     {
-        $this->copy($package, $path, 'phpunit.xml');
+        $this->copy($package, 'phpunit.xml');
     }
 
     /**
      * Write the Travis stub file.
      *
      * @param Package $package
-     * @param string $path
      * @return void
      */
-    protected function writeTravisFile(Package $package, $path)
+    protected function writeTravisFile(Package $package)
     {
-        $this->copy($package, $path, '.travis.yml');
+        $this->copy($package, '.travis.yml');
     }
 
     /**
      * Write the Composer.json stub file.
      *
      * @param Package $package
-     * @param string $path
      * @return void
      */
-    protected function writeComposerFile(Package $package, $path)
+    protected function writeComposerFile(Package $package)
     {
-        $this->copy($package, $path, 'composer.json');
+        $this->copy($package, 'composer.json');
     }
 
     /**
      * Write the stub .gitignore file for the package.
      *
      * @param Package $package
-     * @param string $path
      * @return void
      */
-    public function writeIgnoreFile(Package $package, $path)
+    public function writeIgnoreFile(Package $package)
     {
-        $this->copy($package, $path, 'gitignore.txt', '.gitignore');
+        $this->copy($package, 'gitignore.txt', '.gitignore');
     }
 
     /**
      * Create the test directory for the package.
      *
      * @param Package $package
-     * @param string $path
      * @return void
      */
-    public function writeTestDirectory(Package $package, $path)
+    public function writeTestDirectory(Package $package)
     {
+        $path = $package->getPath();
         $this->createDirectory("$path/tests");
         $this->files->put("$path/tests/.gitkeep", '');
     }
@@ -126,16 +120,17 @@ class Creator
      * Create the main source directory for the package.
      *
      * @param Package $package
-     * @param string $path
      * @return void
      */
-    protected function writeClassDirectory(Package $package, $path)
+    protected function writeClassDirectory(Package $package)
     {
+        $path = $package->getPath();
         $this->createDirectory("$path/src");
     }
 
-    protected function copy(Package $package, $path, $stubFile, $targetName = null)
+    protected function copy(Package $package, $stubFile, $targetName = null)
     {
+        $path = $package->getPath();
         $targetName = $targetName ?: $stubFile;
 
         $source = $this->getStubPath($stubFile);
