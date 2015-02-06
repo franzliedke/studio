@@ -2,6 +2,7 @@
 
 namespace Studio\Console;
 
+use Studio\Composer\TaskRunner;
 use Studio\Config\Config;
 use Studio\Creator;
 use Studio\Package;
@@ -18,13 +19,16 @@ class CreateCommand extends Command
 
     protected $creator;
 
+    protected $composer;
 
-    public function __construct(Config $config, Creator $creator)
+
+    public function __construct(Config $config, Creator $creator, TaskRunner $composer)
     {
         parent::__construct();
 
         $this->config = $config;
         $this->creator = $creator;
+        $this->composer = $composer;
     }
 
     protected function configure()
@@ -54,6 +58,12 @@ class CreateCommand extends Command
 
         $path = $package->getPath();
         $output->writeln("<info>Package directory $path created.</info>");
+
+        $output->writeln("<comment>Running composer install for new package...</comment>");
+        $result = $this->composer->run('install', $package->getPath());
+        $output->write($result);
+
+        $output->writeln("<info>Package successfully created.</info>");
     }
 
     protected function makePackage(InputInterface $input)
