@@ -5,7 +5,8 @@ namespace Studio\Console;
 use Illuminate\Filesystem\Filesystem;
 use Studio\Composer\TaskRunner;
 use Studio\Config\Config;
-use Studio\Creator;
+use Studio\Creator\CreatorInterface;
+use Studio\Creator\SkeletonCreator;
 use Studio\Package;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -91,10 +92,10 @@ class CreateCommand extends Command
      * Build a package creator from the given input options.
      *
      * @param InputInterface $input
-     * @return Creator
+     * @return CreatorInterface
      */
     protected function makeCreator(InputInterface $input)
     {
-        return new Creator(new Filesystem);
+        return new SkeletonCreator(new Filesystem);
     }
 }

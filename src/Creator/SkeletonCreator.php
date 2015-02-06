@@ -1,10 +1,11 @@
 <?php
 
-namespace Studio;
+namespace Studio\Creator;
 
 use Illuminate\Filesystem\Filesystem;
+use Studio\Package;
 
-class Creator
+class SkeletonCreator implements CreatorInterface
 {
 
     /**
@@ -17,11 +18,11 @@ class Creator
      *
      * @param  array
      */
-    protected $blocks = array(
+    protected $blocks = [
         'SupportFiles',
         'ClassDirectory',
         'TestDirectory',
-    );
+    ];
 
 
     public function __construct(Filesystem $files)
@@ -53,7 +54,7 @@ class Creator
      */
     public function writeSupportFiles(Package $package)
     {
-        foreach (array('PhpUnit', 'Travis', 'Composer', 'Ignore') as $file)
+        foreach (['PhpUnit', 'Travis', 'Composer', 'Ignore'] as $file)
         {
             $this->{"write{$file}File"}($package);
         }
