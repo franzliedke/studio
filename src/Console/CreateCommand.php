@@ -67,8 +67,7 @@ class CreateCommand extends Command
         }
 
         list($vendor, $package) = explode('/', $name, 2);
-        $defaultPath = getcwd() . '/' . $package;
-        $path = $input->getOption('path') ?: $defaultPath;
+        $path = $input->getOption('path') ?: $package;
 
         return new Package($vendor, $package, $author, $email, $path);
     }
