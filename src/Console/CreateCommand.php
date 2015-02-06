@@ -2,6 +2,7 @@
 
 namespace Studio\Console;
 
+use Illuminate\Filesystem\Filesystem;
 use Studio\Composer\TaskRunner;
 use Studio\Config\Config;
 use Studio\Creator;
@@ -17,17 +18,14 @@ class CreateCommand extends Command
 
     protected $config;
 
-    protected $creator;
-
     protected $composer;
 
 
-    public function __construct(Config $config, Creator $creator, TaskRunner $composer)
+    public function __construct(Config $config, TaskRunner $composer)
     {
         parent::__construct();
 
         $this->config = $config;
-        $this->creator = $creator;
         $this->composer = $composer;
     }
 
@@ -46,14 +44,21 @@ class CreateCommand extends Command
                 'p',
                 InputOption::VALUE_REQUIRED,
                 'If set, this will overwrite the default path'
+            )
+            ->addOption(
+                'git',
+                'g',
+                InputOption::VALUE_REQUIRED,
+                'If set, this will download the given Git repository instead of creating a new one.'
             );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $package = $this->makePackage($input);
+        $creator = $this->makeCreator($input);
 
-        $this->creator->create($package);
+        $creator->create($package);
         $this->config->addPackage($package);
 
         $path = $package->getPath();
@@ -80,5 +85,16 @@ class CreateCommand extends Command
         $path = $input->getOption('path') ?: $package;
 
         return new Package($vendor, $package, $author, $email, $path);
+    }
+
+    /**
+     * Build a package creator from the given input options.
+     *
+     * @param InputInterface $input
+     * @return Creator
+     */
+    protected function makeCreator(InputInterface $input)
+    {
+        return new Creator(new Filesystem);
     }
 }

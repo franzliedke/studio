@@ -3,13 +3,11 @@
 
 require __DIR__.'/../../../autoload.php';
 
-use Illuminate\Filesystem\Filesystem;
 use Studio\Composer\TaskRunner;
 use Studio\Config\Config;
 use Studio\Config\FileStorage;
 use Studio\Console\CreateCommand;
 use Studio\Console\LoadCommand;
-use Studio\Creator;
 use Symfony\Component\Console\Application;
 
 $studioFile = getcwd().'/studio.json';
@@ -18,7 +16,6 @@ $config = new Config(new FileStorage($studioFile));
 $application = new Application();
 $application->add(new CreateCommand(
     $config,
-    new Creator(new Filesystem),
     new TaskRunner())
 );
 $application->add(new LoadCommand);
