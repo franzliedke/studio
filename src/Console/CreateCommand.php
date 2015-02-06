@@ -6,6 +6,7 @@ use Illuminate\Filesystem\Filesystem;
 use Studio\Composer\TaskRunner;
 use Studio\Config\Config;
 use Studio\Creator\CreatorInterface;
+use Studio\Creator\GitRepoCreator;
 use Studio\Creator\SkeletonCreator;
 use Studio\Package;
 use Symfony\Component\Console\Command\Command;
@@ -73,22 +74,6 @@ class CreateCommand extends Command
         $output->writeln("<info>Autoloads successfully generated.</info>");
     }
 
-    protected function makePackage(InputInterface $input)
-    {
-        $name = $input->getArgument('package');
-        $author = 'Franz Liedke';
-        $email = 'franz@email.org';
-
-        if (! str_contains($name, '/')) {
-            throw new \InvalidArgumentException('Invalid package name');
-        }
-
-        list($vendor, $package) = explode('/', $name, 2);
-        $path = $input->getOption('path') ?: $package;
-
-        return new Package($vendor, $package, $author, $email, $path);
-    }
-
     /**
      * Build a package creator from the given input options.
      *
@@ -97,8 +82,25 @@ class CreateCommand extends Command
      */
     protected function makeCreator(InputInterface $input)
     {
-        $package = $this->makePackage($input);
+        $name = $input->getArgument('package');
 
-        return new SkeletonCreator(new Filesystem, $package);
+        if (! str_contains($name, '/')) {
+            throw new \InvalidArgumentException('Invalid package name');
+        }
+
+        list($vendor, $package) = explode('/', $name, 2);
+        $path = $input->getOption('path') ?: $package;
+
+        if ($input->hasOption('git')) {
+            return new GitRepoCreator($input->getOption('git'), $path);
+        } else {
+            $author = 'Franz Liedke';
+            $email = 'franz@email.org';
+
+            $package = new Package($vendor, $package, $author, $email, $path);
+
+            return new SkeletonCreator(new Filesystem, $package);
+        }
     }
+
 }
