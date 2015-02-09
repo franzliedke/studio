@@ -91,7 +91,7 @@ class CreateCommand extends Command
         list($vendor, $package) = explode('/', $name, 2);
         $path = $input->getOption('path') ?: $package;
 
-        if ($input->hasOption('git')) {
+        if ($input->getOption('git')) {
             return new GitRepoCreator($input->getOption('git'), $path, $this->shell);
         } else {
             $author = 'Franz Liedke';
