@@ -14,6 +14,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 
 class CreateCommand extends Command
 {
@@ -37,15 +38,9 @@ class CreateCommand extends Command
             ->setName('create')
             ->setDescription('Create a new package skeleton')
             ->addArgument(
-                'package',
-                InputArgument::REQUIRED,
-                'The name of the package to create'
-            )
-            ->addOption(
                 'path',
-                'p',
-                InputOption::VALUE_REQUIRED,
-                'If set, this will overwrite the default path'
+                InputArgument::REQUIRED,
+                'The path where the new package should be created'
             )
             ->addOption(
                 'git',
@@ -57,7 +52,7 @@ class CreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $creator = $this->makeCreator($input);
+        $creator = $this->makeCreator($input, $output);
 
         $package = $creator->create();
         $this->config->addPackage($package);
@@ -78,18 +73,15 @@ class CreateCommand extends Command
      * Build a package creator from the given input options.
      *
      * @param InputInterface $input
+     * @param OutputInterface $output
      * @return CreatorInterface
      */
-    protected function makeCreator(InputInterface $input)
+    protected function makeCreator(InputInterface $input, OutputInterface $output)
     {
-        $name = $input->getArgument('package');
-
-        if (! str_contains($name, '/')) {
-            throw new \InvalidArgumentException('Invalid package name');
-        }
+        $name = $this->askForPackageName($input, $output);
 
         list($vendor, $package) = explode('/', $name, 2);
-        $path = $input->getOption('path') ?: $package;
+        $path = $input->getArgument('path');
 
         if ($input->getOption('git')) {
             return new GitRepoCreator($input->getOption('git'), $path, $this->shell);
@@ -101,6 +93,22 @@ class CreateCommand extends Command
 
             return new SkeletonCreator(new Filesystem, $package);
         }
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return string
+     */
+    protected function askForPackageName(InputInterface $input, OutputInterface $output)
+    {
+        do {
+            $helper = $this->getHelperSet()->get('question');
+            $question = new Question('<question>Please enter the package name</question> ');
+            $name = $helper->ask($input, $output, $question);
+        } while (strpos($name, '/') === false);
+
+        return $name;
     }
 
 }

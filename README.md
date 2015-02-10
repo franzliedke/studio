@@ -21,17 +21,14 @@ Globally: `composer global require franzliedke/studio`
 
 ### Create a new package skeleton
 
-    studio create foo/bar --path baz
+    studio create foo
 
 This command creates a skeleton for a new Composer package, already filled with some helpful files to get you started.
-In the above example, we're creating the `foo/bar` package, which will be loaded from the folder `baz` in your project root.
+In the above example, we're creating a new package in the folder `foo` in your project root.
 All its dependencies will be available when using Composer.
-
-The `--path` parameter can be omitted.
-The package would then be created in the `bar` directory.
 
 ### Manage existing packages by cloning a Git repository
 
-    studio create foo/bar --git git@github.com:me/myrepo.git
+    studio create bar --git git@github.com:me/myrepo.git
 
-This will clone the Git repository to the `bar` directory and install its dependencies.
+This will clone the given Git repository to the `bar` directory and install its dependencies.
