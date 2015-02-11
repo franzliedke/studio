@@ -86,8 +86,8 @@ class CreateCommand extends Command
         if ($input->getOption('git')) {
             return new GitRepoCreator($input->getOption('git'), $path, $this->shell);
         } else {
-            $author = 'Franz Liedke';
-            $email = 'franz@email.org';
+            $author = $this->askForAuthorName($input, $output);
+            $email = $this->askForAuthorMail($input, $output);
 
             $package = new Package($vendor, $package, $author, $email, $path);
 
@@ -103,12 +103,43 @@ class CreateCommand extends Command
     protected function askForPackageName(InputInterface $input, OutputInterface $output)
     {
         do {
-            $helper = $this->getHelperSet()->get('question');
-            $question = new Question('<question>Please enter the package name</question> ');
-            $name = $helper->ask($input, $output, $question);
+            $name = $this->ask($input, $output, 'Please enter the package name');
         } while (strpos($name, '/') === false);
 
         return $name;
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return string
+     */
+    protected function askForAuthorName(InputInterface $input, OutputInterface $output)
+    {
+        return $this->ask($input, $output, 'Please enter your name');
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return string
+     */
+    protected function askForAuthorMail(InputInterface $input, OutputInterface $output)
+    {
+        return $this->ask($input, $output, 'Please enter your email address');
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param string $text
+     * @return string
+     */
+    protected function ask(InputInterface $input, OutputInterface $output, $text)
+    {
+        $helper = $this->getHelperSet()->get('question');
+        $question = new Question("<question>$text</question> ");
+        return $helper->ask($input, $output, $question);
     }
 
 }
