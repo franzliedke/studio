@@ -86,11 +86,7 @@ class CreateCommand extends Command
         if ($input->getOption('git')) {
             return new GitRepoCreator($input->getOption('git'), $path, $this->shell);
         } else {
-            $description = $this->askForDescription($input, $output);
-            $author = $this->askForAuthorName($input, $output);
-            $email = $this->askForAuthorMail($input, $output);
-
-            $package = new Package($vendor, $package, $description, $author, $email, $path);
+            $package = new Package($vendor, $package, $path);
 
             return new SkeletonCreator(new Filesystem, $package);
         }
@@ -111,38 +107,6 @@ class CreateCommand extends Command
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return string
-     */
-    protected function askForDescription(InputInterface $input, OutputInterface $output)
-    {
-        return $this->ask($input, $output, 'Please enter a description for your package');
-    }
-
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return string
-     */
-    protected function askForAuthorName(InputInterface $input, OutputInterface $output)
-    {
-        return $this->ask($input, $output, 'Please enter your name');
-    }
-
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return string
-     */
-    protected function askForAuthorMail(InputInterface $input, OutputInterface $output)
-    {
-        return $this->ask($input, $output, 'Please enter your email address');
-    }
-
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
      * @param string $text
      * @return string
      */

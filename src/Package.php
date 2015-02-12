@@ -9,22 +9,13 @@ class Package
 
     protected $name;
 
-    protected $description;
-
-    protected $author;
-
-    protected $email;
-
     protected $path;
 
 
-    public function __construct($vendor, $name, $description, $author, $email, $path)
+    public function __construct($vendor, $name, $path)
     {
         $this->vendor = $vendor;
         $this->name = $name;
-        $this->description = $description;
-        $this->author = $author;
-        $this->email = $email;
         $this->path = $path;
     }
 
@@ -38,34 +29,14 @@ class Package
         return $this->vendor;
     }
 
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
     public function getName()
     {
         return $this->name;
     }
 
-    public function getAuthor()
-    {
-        return $this->author;
-    }
-
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
     public function getPath()
     {
         return $this->path;
-    }
-
-    public function equals(Package $other)
-    {
-        return $this->getComposerId() == $other->getComposerId();
     }
 
 }
