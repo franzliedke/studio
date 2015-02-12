@@ -34,26 +34,13 @@ class GitRepoCreator implements CreatorInterface
     {
         $this->cloneRepository();
 
-        return $this->makePackage();
+        return Package::fromFolder($this->path);
     }
 
     protected function cloneRepository()
     {
         $task = "git clone $this->repo $this->path";
         $this->shell->run($task);
-    }
-
-    protected function makePackage()
-    {
-        $composer = json_decode(file_get_contents($this->path . '/composer.json'));
-
-        list($vendor, $name) = explode('/', $composer->name, 2);
-
-        return new Package(
-            $vendor,
-            $name,
-            $this->path
-        );
     }
 
 }

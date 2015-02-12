@@ -12,6 +12,19 @@ class Package
     protected $path;
 
 
+    public static function fromFolder($path)
+    {
+        $composer = json_decode(file_get_contents("$path/composer.json"));
+
+        list($vendor, $name) = explode('/', $composer->name, 2);
+
+        return new static(
+            $vendor,
+            $name,
+            $path
+        );
+    }
+
     public function __construct($vendor, $name, $path)
     {
         $this->vendor = $vendor;
