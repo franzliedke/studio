@@ -23,6 +23,16 @@ class CreateCommand extends Command
 
     protected $shell;
 
+    /**
+     * @var InputInterface
+     */
+    protected $input;
+
+    /**
+     * @var OutputInterface
+     */
+    protected $output;
+
 
     public function __construct(Config $config, TaskRunner $shell)
     {
@@ -52,39 +62,45 @@ class CreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $creator = $this->makeCreator($input, $output);
+        $this->input = $input;
+        $this->output = $output;
+
+        $this->createPackage();
+    }
+
+    protected function createPackage()
+    {
+        $creator = $this->makeCreator();
 
         $package = $creator->create();
         $this->config->addPackage($package);
 
         $path = $package->getPath();
-        $output->writeln("<info>Package directory $path created.</info>");
+        $this->output->writeln("<info>Package directory $path created.</info>");
 
-        $output->writeln("<comment>Running composer install for new package...</comment>");
+        $this->output->writeln("<comment>Running composer install for new package...</comment>");
         $this->shell->run('composer install --prefer-dist', $package->getPath());
-        $output->writeln("<info>Package successfully created.</info>");
+        $this->output->writeln("<info>Package successfully created.</info>");
 
-        $output->writeln("<comment>Dumping autoloads...</comment>");
+        $this->output->writeln("<comment>Dumping autoloads...</comment>");
         $this->shell->run('composer dump-autoload');
-        $output->writeln("<info>Autoloads successfully generated.</info>");
+        $this->output->writeln("<info>Autoloads successfully generated.</info>");
     }
 
     /**
      * Build a package creator from the given input options.
      *
-     * @param InputInterface $input
-     * @param OutputInterface $output
      * @return CreatorInterface
      */
-    protected function makeCreator(InputInterface $input, OutputInterface $output)
+    protected function makeCreator()
     {
-        $name = $this->askForPackageName($input, $output);
+        $name = $this->askForPackageName();
 
         list($vendor, $package) = explode('/', $name, 2);
-        $path = $input->getArgument('path');
+        $path = $this->input->getArgument('path');
 
-        if ($input->getOption('git')) {
-            return new GitRepoCreator($input->getOption('git'), $path, $this->shell);
+        if ($this->input->getOption('git')) {
+            return new GitRepoCreator($this->input->getOption('git'), $path, $this->shell);
         } else {
             $package = new Package($vendor, $package, $path);
 
@@ -93,14 +109,12 @@ class CreateCommand extends Command
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
      * @return string
      */
-    protected function askForPackageName(InputInterface $input, OutputInterface $output)
+    protected function askForPackageName()
     {
         do {
-            $name = $this->ask($input, $output, 'Please enter the package name');
+            $name = $this->ask('Please enter the package name');
         } while (strpos($name, '/') === false);
 
         return $name;
@@ -110,11 +124,11 @@ class CreateCommand extends Command
      * @param string $text
      * @return string
      */
-    protected function ask(InputInterface $input, OutputInterface $output, $text)
+    protected function ask($text)
     {
         $helper = $this->getHelperSet()->get('question');
         $question = new Question("<question>$text</question> ");
-        return $helper->ask($input, $output, $question);
+        return $helper->ask($this->input, $this->output, $question);
     }
 
 }
