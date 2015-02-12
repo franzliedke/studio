@@ -48,10 +48,12 @@ class GitRepoCreator implements CreatorInterface
         $composer = json_decode(file_get_contents($this->path . '/composer.json'));
 
         list($vendor, $name) = explode('/', $composer->name, 2);
+        $description = $composer->description;
 
         return new Package(
             $vendor,
             $name,
+            $description,
             $composer->authors[0]->name,
             $composer->authors[0]->email,
             $this->path

@@ -9,6 +9,8 @@ class Package
 
     protected $name;
 
+    protected $description;
+
     protected $author;
 
     protected $email;
@@ -16,10 +18,11 @@ class Package
     protected $path;
 
 
-    public function __construct($vendor, $name, $author, $email, $path)
+    public function __construct($vendor, $name, $description, $author, $email, $path)
     {
         $this->vendor = $vendor;
         $this->name = $name;
+        $this->description = $description;
         $this->author = $author;
         $this->email = $email;
         $this->path = $path;
@@ -33,6 +36,11 @@ class Package
     public function getVendor()
     {
         return $this->vendor;
+    }
+
+    public function getDescription()
+    {
+        return $this->description;
     }
 
     public function getName()
