@@ -1,6 +1,6 @@
 {
     "name": "{{composer_id}}",
-    "description": "",
+    "description": "{{description}}",
     "authors": [
         {
             "name": "{{author}}",
