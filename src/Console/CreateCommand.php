@@ -23,16 +23,6 @@ class CreateCommand extends Command
 
     protected $shell;
 
-    /**
-     * @var InputInterface
-     */
-    protected $input;
-
-    /**
-     * @var OutputInterface
-     */
-    protected $output;
-
 
     public function __construct(Config $config, TaskRunner $shell)
     {
@@ -62,42 +52,35 @@ class CreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->input = $input;
-        $this->output = $output;
-
-        $this->createPackage();
-    }
-
-    protected function createPackage()
-    {
-        $creator = $this->makeCreator();
+        $creator = $this->makeCreator($input);
 
         $package = $creator->create();
         $this->config->addPackage($package);
 
         $path = $package->getPath();
-        $this->output->writeln("<info>Package directory $path created.</info>");
+        $output->writeln("<info>Package directory $path created.</info>");
 
-        $this->output->writeln("<comment>Running composer install for new package...</comment>");
+        $output->writeln("<comment>Running composer install for new package...</comment>");
         $this->shell->run('composer install --prefer-dist', $package->getPath());
-        $this->output->writeln("<info>Package successfully created.</info>");
+        $output->writeln("<info>Package successfully created.</info>");
 
-        $this->output->writeln("<comment>Dumping autoloads...</comment>");
+        $output->writeln("<comment>Dumping autoloads...</comment>");
         $this->shell->run('composer dump-autoload');
-        $this->output->writeln("<info>Autoloads successfully generated.</info>");
+        $output->writeln("<info>Autoloads successfully generated.</info>");
     }
 
     /**
      * Build a package creator from the given input options.
      *
+     * @param InputInterface $input
      * @return CreatorInterface
      */
-    protected function makeCreator()
+    protected function makeCreator(InputInterface $input)
     {
-        $path = $this->input->getArgument('path');
+        $path = $input->getArgument('path');
 
-        if ($this->input->getOption('git')) {
-            return new GitRepoCreator($this->input->getOption('git'), $path, $this->shell);
+        if ($input->getOption('git')) {
+            return new GitRepoCreator($input->getOption('git'), $path, $this->shell);
         } else {
             return new SkeletonCreator(new Filesystem, $path, $this->shell);
         }
