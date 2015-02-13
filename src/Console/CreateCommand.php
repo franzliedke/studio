@@ -94,41 +94,13 @@ class CreateCommand extends Command
      */
     protected function makeCreator()
     {
-        $name = $this->askForPackageName();
-
-        list($vendor, $package) = explode('/', $name, 2);
         $path = $this->input->getArgument('path');
 
         if ($this->input->getOption('git')) {
             return new GitRepoCreator($this->input->getOption('git'), $path, $this->shell);
         } else {
-            $package = new Package($vendor, $package, $path);
-
-            return new SkeletonCreator(new Filesystem, $package);
+            return new SkeletonCreator(new Filesystem, $path, $this->shell);
         }
-    }
-
-    /**
-     * @return string
-     */
-    protected function askForPackageName()
-    {
-        do {
-            $name = $this->ask('Please enter the package name');
-        } while (strpos($name, '/') === false);
-
-        return $name;
-    }
-
-    /**
-     * @param string $text
-     * @return string
-     */
-    protected function ask($text)
-    {
-        $helper = $this->getHelperSet()->get('question');
-        $question = new Question("<question>$text</question> ");
-        return $helper->ask($this->input, $this->output, $question);
     }
 
 }

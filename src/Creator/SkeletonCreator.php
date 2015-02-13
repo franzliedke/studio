@@ -4,6 +4,7 @@ namespace Studio\Creator;
 
 use Illuminate\Filesystem\Filesystem;
 use Studio\Package;
+use Studio\Shell\TaskRunner;
 
 class SkeletonCreator implements CreatorInterface
 {
@@ -14,9 +15,14 @@ class SkeletonCreator implements CreatorInterface
     protected $files;
 
     /**
-     * @var Package
+     * @var string
      */
-    protected $package;
+    protected $path;
+
+    /**
+     * @var TaskRunner
+     */
+    protected $shell;
 
     protected $directoriesToCreate = [
         '',
@@ -27,15 +33,15 @@ class SkeletonCreator implements CreatorInterface
     protected $filesToCopy = [
         'phpunit.xml',
         '.travis.yml',
-        'composer.json',
         ['gitignore.txt', '.gitignore'],
     ];
 
 
-    public function __construct(Filesystem $files, Package $package)
+    public function __construct(Filesystem $files, $path, TaskRunner $shell)
     {
         $this->files = $files;
-        $this->package = $package;
+        $this->path = $path;
+        $this->shell = $shell;
     }
 
     /**
@@ -46,17 +52,23 @@ class SkeletonCreator implements CreatorInterface
     public function create()
     {
         $this->createDirectories();
+        $this->initPackage();
         $this->copyFiles();
 
-        return $this->package;
+        return Package::fromFolder($this->path);
     }
 
     protected function createDirectories()
     {
         foreach ($this->directoriesToCreate as $directory) {
-            $path = $this->package->getPath() . '/' . $directory;
+            $path = $this->path . '/' . $directory;
             $this->files->makeDirectory($path, 0777, true);
         }
+    }
+
+    protected function initPackage()
+    {
+        $this->shell->run('composer init', $this->path);
     }
 
     protected function copyFiles()
@@ -73,37 +85,17 @@ class SkeletonCreator implements CreatorInterface
 
     protected function copy($stubFile, $targetFile)
     {
-        $path = $this->package->getPath();
+        $path = $this->path;
 
         $source = $this->getStubPath($stubFile);
         $target = "$path/$targetFile";
 
         $this->files->copy($source, $target);
-
-        $this->replacePlaceholders($target);
     }
 
     protected function getStubPath($stubFile)
     {
         return __DIR__ . '/../../stubs/' . $stubFile;
-    }
-
-    protected function replacePlaceholders($target)
-    {
-        $contents = $this->files->get($target);
-
-        $contents = preg_replace_callback(
-            '/\{\{([^}]+)\}\}/',
-            function ($matches) {
-                $method = ucfirst(camel_case($matches[1]));
-                $method = "get$method";
-
-                return $this->package->$method();
-            },
-            $contents
-        );
-
-        $this->files->put($target, $contents);
     }
 
 }
