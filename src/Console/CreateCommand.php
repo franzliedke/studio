@@ -8,7 +8,6 @@ use Studio\Config\Config;
 use Studio\Creator\CreatorInterface;
 use Studio\Creator\GitRepoCreator;
 use Studio\Creator\SkeletonCreator;
-use Studio\Package;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
