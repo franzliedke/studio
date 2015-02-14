@@ -39,8 +39,8 @@ class GitRepoCreator implements CreatorInterface
 
     protected function cloneRepository()
     {
-        $task = "git clone $this->repo $this->path";
-        $this->shell->run($task);
+        $this->shell->process("git clone $this->repo $this->path")
+                    ->run();
     }
 
 }

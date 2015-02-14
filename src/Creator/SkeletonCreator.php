@@ -68,7 +68,8 @@ class SkeletonCreator implements CreatorInterface
 
     protected function initPackage()
     {
-        $this->shell->run('composer init', $this->path);
+        $this->shell->process('composer init', $this->path)
+                    ->run();
     }
 
     protected function copyFiles()

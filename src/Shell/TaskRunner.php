@@ -7,18 +7,12 @@ use Symfony\Component\Process\Process;
 class TaskRunner
 {
 
-    public function run($task, $directory = null)
+    public function process($task, $directory = null)
     {
         $process = new Process("$task", $directory);
         $process->setTimeout(3600);
-        $process->run();
 
-        if (! $process->isSuccessful()) {
-            $error = $process->getErrorOutput();
-            throw new \RuntimeException("Error while running Composer: $error");
-        }
-
-        return $process->getOutput();
+        return $process;
     }
 
 }

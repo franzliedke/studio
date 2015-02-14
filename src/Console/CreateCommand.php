@@ -61,12 +61,25 @@ class CreateCommand extends Command
         $output->writeln("<info>Package directory $path created.</info>");
 
         $output->writeln("<comment>Running composer install for new package...</comment>");
-        $this->shell->run('composer install --prefer-dist', $package->getPath());
+        $this->runOnShell('composer install --prefer-dist', $package->getPath());
         $output->writeln("<info>Package successfully created.</info>");
 
         $output->writeln("<comment>Dumping autoloads...</comment>");
-        $this->shell->run('composer dump-autoload');
+        $this->runOnShell('composer dump-autoload');
         $output->writeln("<info>Autoloads successfully generated.</info>");
+    }
+
+    protected function runOnShell($task, $workDir = null)
+    {
+        $process = $this->shell->process($task, $workDir);
+        $process->run();
+
+        if (! $process->isSuccessful()) {
+            $error = $process->getErrorOutput();
+            throw new \RuntimeException("Error while running Composer: $error");
+        }
+
+        return $process->getOutput();
     }
 
     /**
