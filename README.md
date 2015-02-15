@@ -1,5 +1,7 @@
 # studio
 
+**STILL IN DEVELOPMENT**
+
 Develop your Composer libraries with style.
 
 This package makes it easy to develop Composer packages while using them.
