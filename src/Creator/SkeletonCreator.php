@@ -3,6 +3,7 @@
 namespace Studio\Creator;
 
 use Illuminate\Filesystem\Filesystem;
+use Studio\Components\ComponentInterface;
 use Studio\Package;
 use Studio\Shell\TaskRunner;
 
@@ -36,12 +37,22 @@ class SkeletonCreator implements CreatorInterface
         ['gitignore.txt', '.gitignore'],
     ];
 
+    /**
+     * @var ComponentInterface[]
+     */
+    protected $components;
+
 
     public function __construct(Filesystem $files, $path, TaskRunner $shell)
     {
         $this->files = $files;
         $this->path = $path;
         $this->shell = $shell;
+    }
+
+    public function component(ComponentInterface $component)
+    {
+        $this->components[] = $component;
     }
 
     /**
@@ -54,6 +65,8 @@ class SkeletonCreator implements CreatorInterface
         $this->createDirectories();
         $this->initPackage();
         $this->copyFiles();
+
+        $this->installComponents();
 
         return Package::fromFolder($this->path);
     }
@@ -82,6 +95,18 @@ class SkeletonCreator implements CreatorInterface
 
             $this->copy($source, $target);
         }
+    }
+
+    protected function installComponents()
+    {
+        $composerFile = $this->path . '/composer.json';
+        $config = json_decode(file_get_contents($composerFile));
+
+        foreach ($this->components as $component) {
+            $component->configureComposer($config);
+        }
+
+        file_put_contents($composerFile, json_encode($config, JSON_PRETTY_PRINT));
     }
 
     protected function copy($stubFile, $targetFile)
