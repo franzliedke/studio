@@ -7,7 +7,6 @@ use Studio\Shell\TaskRunner;
 use Studio\Config\Config;
 use Studio\Config\FileStorage;
 use Studio\Console\CreateCommand;
-use Studio\Console\LoadCommand;
 use Symfony\Component\Console\Application;
 
 $studioFile = getcwd().'/studio.json';
@@ -18,5 +17,4 @@ $application->add(new CreateCommand(
     $config,
     new TaskRunner())
 );
-$application->add(new LoadCommand);
 $application->run();
