@@ -102,7 +102,7 @@ class SkeletonCreator implements CreatorInterface
         $config = json_decode(file_get_contents($composerFile));
 
         foreach ($this->parts as $part) {
-            $part->configureComposer($config);
+            $part->setupPackage($config, $this->filesystem);
         }
 
         file_put_contents($composerFile, json_encode($config, JSON_PRETTY_PRINT));
