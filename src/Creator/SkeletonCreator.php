@@ -26,15 +26,6 @@ class SkeletonCreator implements CreatorInterface
      */
     protected $shell;
 
-    protected $directoriesToCreate = [
-        'src',
-        'tests',
-    ];
-
-    protected $filesToCopy = [
-        ['gitignore.txt', '.gitignore'],
-    ];
-
     /**
      * @var PartInterface[]
      */
@@ -60,38 +51,17 @@ class SkeletonCreator implements CreatorInterface
      */
     public function create()
     {
-        $this->createDirectories();
         $this->initPackage();
-        $this->copyFiles();
 
         $this->installParts();
 
         return Package::fromFolder($this->path);
     }
 
-    protected function createDirectories()
-    {
-        foreach ($this->directoriesToCreate as $directory) {
-            $this->filesystem->createDir($directory);
-        }
-    }
-
     protected function initPackage()
     {
         $this->shell->process('composer init', $this->path)
                     ->run();
-    }
-
-    protected function copyFiles()
-    {
-        foreach ($this->filesToCopy as $files) {
-            $files = (array) $files;
-
-            $source = $files[0];
-            $target = isset($files[1]) ? $files[1] : $source;
-
-            $this->copy($source, $target);
-        }
     }
 
     protected function installParts()
@@ -104,21 +74,6 @@ class SkeletonCreator implements CreatorInterface
         }
 
         file_put_contents($composerFile, json_encode($config, JSON_PRETTY_PRINT));
-    }
-
-    protected function copy($stubFile, $targetFile)
-    {
-        $path = $this->path;
-
-        $source = $this->getStubPath($stubFile);
-        $target = "$path/$targetFile";
-
-        copy($source, $target);
-    }
-
-    protected function getStubPath($stubFile)
-    {
-        return __DIR__ . '/../../stubs/' . $stubFile;
     }
 
 }
