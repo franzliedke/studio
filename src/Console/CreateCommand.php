@@ -2,7 +2,6 @@
 
 namespace Studio\Console;
 
-use Illuminate\Filesystem\Filesystem;
 use Studio\Parts;
 use Studio\Shell\TaskRunner;
 use Studio\Config\Config;
@@ -95,7 +94,7 @@ class CreateCommand extends Command
         if ($input->getOption('git')) {
             return new GitRepoCreator($input->getOption('git'), $path, $this->shell);
         } else {
-            $creator = new SkeletonCreator(new Filesystem, $path, $this->shell);
+            $creator = new SkeletonCreator($path, $this->shell);
             $this->installParts($creator);
             return $creator;
         }

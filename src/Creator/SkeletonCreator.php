@@ -2,7 +2,8 @@
 
 namespace Studio\Creator;
 
-use Illuminate\Filesystem\Filesystem;
+use League\Flysystem\Adapter\Local;
+use League\Flysystem\Filesystem;
 use Studio\Parts\PartInterface;
 use Studio\Package;
 use Studio\Shell\TaskRunner;
@@ -11,14 +12,14 @@ class SkeletonCreator implements CreatorInterface
 {
 
     /**
-     * @var Filesystem
-     */
-    protected $files;
-
-    /**
      * @var string
      */
     protected $path;
+
+    /**
+     * @var Filesystem
+     */
+    protected $filesystem;
 
     /**
      * @var TaskRunner
@@ -26,7 +27,6 @@ class SkeletonCreator implements CreatorInterface
     protected $shell;
 
     protected $directoriesToCreate = [
-        '',
         'src',
         'tests',
     ];
@@ -43,10 +43,10 @@ class SkeletonCreator implements CreatorInterface
     protected $parts;
 
 
-    public function __construct(Filesystem $files, $path, TaskRunner $shell)
+    public function __construct($path, TaskRunner $shell)
     {
-        $this->files = $files;
         $this->path = $path;
+        $this->filesystem = new Filesystem(new Local($path));
         $this->shell = $shell;
     }
 
@@ -74,8 +74,7 @@ class SkeletonCreator implements CreatorInterface
     protected function createDirectories()
     {
         foreach ($this->directoriesToCreate as $directory) {
-            $path = $this->path . '/' . $directory;
-            $this->files->makeDirectory($path, 0777, true);
+            $this->filesystem->createDir($directory);
         }
     }
 
@@ -116,7 +115,7 @@ class SkeletonCreator implements CreatorInterface
         $source = $this->getStubPath($stubFile);
         $target = "$path/$targetFile";
 
-        $this->files->copy($source, $target);
+        copy($source, $target);
     }
 
     protected function getStubPath($stubFile)
