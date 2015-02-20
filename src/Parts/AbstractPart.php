@@ -15,6 +15,8 @@ abstract class AbstractPart implements PartInterface
     public function setInput(PartInputInterface $input)
     {
         $this->input = $input;
+
+        return $this;
     }
 
 }
