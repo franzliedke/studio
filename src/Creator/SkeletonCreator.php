@@ -32,7 +32,6 @@ class SkeletonCreator implements CreatorInterface
     ];
 
     protected $filesToCopy = [
-        'phpunit.xml',
         '.travis.yml',
         ['gitignore.txt', '.gitignore'],
     ];
