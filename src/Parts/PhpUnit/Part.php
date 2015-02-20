@@ -1,8 +1,10 @@
 <?php
 
-namespace Studio\Components;
+namespace Studio\Parts\PhpUnit;
 
-class PhpUnit implements ComponentInterface
+use Studio\Parts\PartInterface;
+
+class Part implements PartInterface
 {
 
     public function configureComposer($config)

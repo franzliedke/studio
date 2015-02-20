@@ -1,8 +1,8 @@
 <?php
 
-namespace Studio\Components;
+namespace Studio\Parts;
 
-interface ComponentInterface
+interface PartInterface
 {
 
     public function configureComposer($config);

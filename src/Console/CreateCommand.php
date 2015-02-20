@@ -3,7 +3,7 @@
 namespace Studio\Console;
 
 use Illuminate\Filesystem\Filesystem;
-use Studio\Components\PhpUnit;
+use Studio\Parts\PhpUnit\Part;
 use Studio\Shell\TaskRunner;
 use Studio\Config\Config;
 use Studio\Creator\CreatorInterface;
@@ -96,19 +96,19 @@ class CreateCommand extends Command
             return new GitRepoCreator($input->getOption('git'), $path, $this->shell);
         } else {
             $creator = new SkeletonCreator(new Filesystem, $path, $this->shell);
-            $this->installComponents($creator);
+            $this->installParts($creator);
             return $creator;
         }
     }
 
-    protected function installComponents(SkeletonCreator $creator)
+    protected function installParts(SkeletonCreator $creator)
     {
-        $components = [
-            new PhpUnit(),
+        $parts = [
+            new Part(),
         ];
 
-        foreach ($components as $component) {
-            $creator->component($component);
+        foreach ($parts as $part) {
+            $creator->addPart($part);
         }
     }
 

@@ -3,7 +3,7 @@
 namespace Studio\Creator;
 
 use Illuminate\Filesystem\Filesystem;
-use Studio\Components\ComponentInterface;
+use Studio\Parts\PartInterface;
 use Studio\Package;
 use Studio\Shell\TaskRunner;
 
@@ -38,9 +38,9 @@ class SkeletonCreator implements CreatorInterface
     ];
 
     /**
-     * @var ComponentInterface[]
+     * @var PartInterface[]
      */
-    protected $components;
+    protected $parts;
 
 
     public function __construct(Filesystem $files, $path, TaskRunner $shell)
@@ -50,9 +50,9 @@ class SkeletonCreator implements CreatorInterface
         $this->shell = $shell;
     }
 
-    public function component(ComponentInterface $component)
+    public function addPart(PartInterface $part)
     {
-        $this->components[] = $component;
+        $this->parts[] = $part;
     }
 
     /**
@@ -66,7 +66,7 @@ class SkeletonCreator implements CreatorInterface
         $this->initPackage();
         $this->copyFiles();
 
-        $this->installComponents();
+        $this->installParts();
 
         return Package::fromFolder($this->path);
     }
@@ -97,13 +97,13 @@ class SkeletonCreator implements CreatorInterface
         }
     }
 
-    protected function installComponents()
+    protected function installParts()
     {
         $composerFile = $this->path . '/composer.json';
         $config = json_decode(file_get_contents($composerFile));
 
-        foreach ($this->components as $component) {
-            $component->configureComposer($config);
+        foreach ($this->parts as $part) {
+            $part->configureComposer($config);
         }
 
         file_put_contents($composerFile, json_encode($config, JSON_PRETTY_PRINT));
