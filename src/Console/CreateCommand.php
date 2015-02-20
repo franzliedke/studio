@@ -104,6 +104,7 @@ class CreateCommand extends Command
     {
         $parts = [
             new Parts\PhpUnit\Part(),
+            new Parts\TravisCI\Part(),
         ];
 
         foreach ($parts as $part) {
