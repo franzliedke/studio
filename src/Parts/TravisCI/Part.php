@@ -8,7 +8,7 @@ use Studio\Parts\AbstractPart;
 class Part extends AbstractPart
 {
 
-    public function setupPackage($config, Filesystem $target)
+    public function setupPackage($composer, Filesystem $target)
     {
         $target->write('.travis.yml', $this->getStubFile('.travis.yml'));
     }

@@ -13,7 +13,7 @@ abstract class AbstractPart implements PartInterface
     protected $input;
 
 
-    abstract public function setupPackage($config, Filesystem $target);
+    abstract public function setupPackage($composer, Filesystem $target);
 
     public function setInput(PartInputInterface $input)
     {

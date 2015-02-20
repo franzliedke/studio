@@ -8,9 +8,9 @@ use Studio\Parts\AbstractPart;
 class Part extends AbstractPart
 {
 
-    public function setupPackage($config, Filesystem $target)
+    public function setupPackage($composer, Filesystem $target)
     {
-        $config->{'require-dev'}['phpunit/phpunit'] = '4.*';
+        $composer->{'require-dev'}['phpunit/phpunit'] = '4.*';
 
         $target->write('phpunit.xml', $this->getStubFile('phpunit.xml'));
     }

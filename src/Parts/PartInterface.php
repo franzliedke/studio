@@ -7,6 +7,6 @@ use League\Flysystem\Filesystem;
 interface PartInterface
 {
 
-    public function setupPackage($config, Filesystem $target);
+    public function setupPackage($composer, Filesystem $target);
 
 }
