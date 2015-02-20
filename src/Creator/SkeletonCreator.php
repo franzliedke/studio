@@ -66,14 +66,13 @@ class SkeletonCreator implements CreatorInterface
 
     protected function installParts()
     {
-        $composerFile = $this->path . '/composer.json';
-        $config = json_decode(file_get_contents($composerFile));
+        $config = json_decode($this->filesystem->read('composer.json'));
 
         foreach ($this->parts as $part) {
             $part->setupPackage($config, $this->filesystem);
         }
 
-        file_put_contents($composerFile, json_encode($config, JSON_PRETTY_PRINT));
+        $this->filesystem->write('composer.json', json_encode($config, JSON_PRETTY_PRINT));
     }
 
 }
