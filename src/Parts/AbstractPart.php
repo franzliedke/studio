@@ -7,6 +7,9 @@ use League\Flysystem\Filesystem;
 abstract class AbstractPart implements PartInterface
 {
 
+    /**
+     * @var PartInputInterface
+     */
     protected $input;
 
 

@@ -2,26 +2,32 @@
 
 namespace Studio\Parts;
 
-use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ConsoleInput implements PartInputInterface
 {
 
-    protected $input;
+    /**
+     * @var DialogHelper
+     */
+    protected $dialog;
 
+    /**
+     * @var OutputInterface
+     */
     protected $output;
 
 
-    public function __construct(InputInterface $input, OutputInterface $output)
+    public function __construct(DialogHelper $dialog, OutputInterface $output)
     {
-        $this->input = $input;
+        $this->dialog = $dialog;
         $this->output = $output;
     }
 
     public function ask($question)
     {
-        // TODO: Implement ask() method.
+        return $this->dialog->ask($this->output, $question);
     }
 
 }

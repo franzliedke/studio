@@ -24,6 +24,7 @@ class CreateCommand extends Command
 
     protected $partClasses = [
         'Studio\Parts\Base\Part',
+        'Studio\Parts\Composer\Part',
         'Studio\Parts\PhpUnit\Part',
         'Studio\Parts\TravisCI\Part',
     ];
@@ -62,7 +63,7 @@ class CreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->partInput = new ConsoleInput($input, $output);
+        $this->partInput = new ConsoleInput($this->getHelper('dialog'), $output);
 
         $creator = $this->makeCreator($input);
 
