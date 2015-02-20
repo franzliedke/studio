@@ -6,7 +6,6 @@ use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use Studio\Parts\PartInterface;
 use Studio\Package;
-use Studio\Shell\TaskRunner;
 
 class SkeletonCreator implements CreatorInterface
 {
@@ -22,21 +21,15 @@ class SkeletonCreator implements CreatorInterface
     protected $filesystem;
 
     /**
-     * @var TaskRunner
-     */
-    protected $shell;
-
-    /**
      * @var PartInterface[]
      */
     protected $parts;
 
 
-    public function __construct($path, TaskRunner $shell)
+    public function __construct($path)
     {
         $this->path = $path;
         $this->filesystem = new Filesystem(new Local($path));
-        $this->shell = $shell;
     }
 
     public function addPart(PartInterface $part)
@@ -51,22 +44,14 @@ class SkeletonCreator implements CreatorInterface
      */
     public function create()
     {
-        $this->initPackage();
-
         $this->installParts();
 
         return Package::fromFolder($this->path);
     }
 
-    protected function initPackage()
-    {
-        $this->shell->process('composer init', $this->path)
-                    ->run();
-    }
-
     protected function installParts()
     {
-        $config = json_decode($this->filesystem->read('composer.json'));
+        $config = new \stdClass();
 
         foreach ($this->parts as $part) {
             $part->setupPackage($config, $this->filesystem);

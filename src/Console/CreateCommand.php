@@ -107,7 +107,7 @@ class CreateCommand extends Command
         if ($input->getOption('git')) {
             return new GitRepoCreator($input->getOption('git'), $path, $this->shell);
         } else {
-            $creator = new SkeletonCreator($path, $this->shell);
+            $creator = new SkeletonCreator($path);
             $this->installParts($creator);
             return $creator;
         }
