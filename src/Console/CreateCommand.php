@@ -103,6 +103,7 @@ class CreateCommand extends Command
     protected function installParts(SkeletonCreator $creator)
     {
         $parts = [
+            new Parts\Base\Part(),
             new Parts\PhpUnit\Part(),
             new Parts\TravisCI\Part(),
         ];
