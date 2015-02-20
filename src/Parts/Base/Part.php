@@ -3,9 +3,9 @@
 namespace Studio\Parts\Base;
 
 use League\Flysystem\Filesystem;
-use Studio\Parts\PartInterface;
+use Studio\Parts\AbstractPart;
 
-class Part implements PartInterface
+class Part extends AbstractPart
 {
 
     public function setupPackage($config, Filesystem $target)

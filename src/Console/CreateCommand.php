@@ -2,7 +2,7 @@
 
 namespace Studio\Console;
 
-use Studio\Parts;
+use Studio\Parts\ConsoleInput;
 use Studio\Shell\TaskRunner;
 use Studio\Config\Config;
 use Studio\Creator\CreatorInterface;
@@ -21,6 +21,17 @@ class CreateCommand extends Command
     protected $config;
 
     protected $shell;
+
+    protected $partClasses = [
+        'Studio\Parts\Base\Part',
+        'Studio\Parts\PhpUnit\Part',
+        'Studio\Parts\TravisCI\Part',
+    ];
+
+    /**
+     * @var \Studio\Parts\PartInputInterface
+     */
+    protected $partInput;
 
 
     public function __construct(Config $config, TaskRunner $shell)
@@ -51,6 +62,8 @@ class CreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->partInput = new ConsoleInput($input, $output);
+
         $creator = $this->makeCreator($input);
 
         $package = $creator->create();
@@ -102,15 +115,21 @@ class CreateCommand extends Command
 
     protected function installParts(SkeletonCreator $creator)
     {
-        $parts = [
-            new Parts\Base\Part(),
-            new Parts\PhpUnit\Part(),
-            new Parts\TravisCI\Part(),
-        ];
+        $parts = $this->makeParts();
 
         foreach ($parts as $part) {
             $creator->addPart($part);
         }
+    }
+
+    /**
+     * @return \Studio\Parts\AbstractPart[]
+     */
+    protected function makeParts()
+    {
+        return array_map(function ($class) {
+            return (new $class)->setInput($this->partInput);
+        }, $this->partClasses);
     }
 
 }
