@@ -3,7 +3,7 @@
 namespace Studio\Console;
 
 use Illuminate\Filesystem\Filesystem;
-use Studio\Parts\PhpUnit\Part;
+use Studio\Parts;
 use Studio\Shell\TaskRunner;
 use Studio\Config\Config;
 use Studio\Creator\CreatorInterface;
@@ -104,7 +104,7 @@ class CreateCommand extends Command
     protected function installParts(SkeletonCreator $creator)
     {
         $parts = [
-            new Part(),
+            new Parts\PhpUnit\Part(),
         ];
 
         foreach ($parts as $part) {
