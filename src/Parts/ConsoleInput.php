@@ -25,9 +25,24 @@ class ConsoleInput implements PartInputInterface
         $this->output = $output;
     }
 
-    public function ask($question)
+    public function ask($question, callable $validator, $default = null)
     {
-        return $this->dialog->ask($this->output, $question);
+        return $this->dialog->askAndValidate(
+            $this->output,
+            "<question>$question</question>",
+            $this->validateWith($validator),
+            false,
+            $default
+        );
+    }
+
+    protected function validateWith($validator)
+    {
+        return function ($answer) use ($validator) {
+            if ($validator($answer)) return $answer;
+
+            throw new \RuntimeException('Invalid. Try again.');
+        };
     }
 
 }

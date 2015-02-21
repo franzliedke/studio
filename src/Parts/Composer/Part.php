@@ -10,7 +10,12 @@ class Part extends AbstractPart
 
     public function setupPackage($composer, Filesystem $target)
     {
-        $composer->name = $this->input->ask('Please name this package');
+        $composer->name = $this->input->ask(
+            'Please name this package',
+            function ($value) {
+                return preg_match('/[[:alnum:]]+\/[[:alnum:]]+/', $value);
+            }
+        );
     }
 
 }
