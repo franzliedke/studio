@@ -29,7 +29,7 @@ class ConsoleInput implements PartInputInterface
     {
         return $this->dialog->askConfirmation(
             $this->output,
-            "<question>$question</question>",
+            "<question>$question</question> ",
             $default
         );
     }
@@ -38,7 +38,7 @@ class ConsoleInput implements PartInputInterface
     {
         return $this->dialog->askAndValidate(
             $this->output,
-            "<question>$question</question>",
+            "<question>$question</question> ",
             $this->validateWith($validator),
             false,
             $default
