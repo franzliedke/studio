@@ -10,7 +10,9 @@ class Part extends AbstractPart
 
     public function setupPackage($composer, Filesystem $target)
     {
-        $target->write('.travis.yml', $this->getStubFile('.travis.yml'));
+        if ($this->input->confirm('Do you want to set up TravisCI as continuous integration tool?')) {
+            $target->write('.travis.yml', $this->getStubFile('.travis.yml'));
+        }
     }
 
     protected function getStubFile($name)
