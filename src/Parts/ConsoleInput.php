@@ -25,6 +25,15 @@ class ConsoleInput implements PartInputInterface
         $this->output = $output;
     }
 
+    public function confirm($question, $default = false)
+    {
+        return $this->dialog->askConfirmation(
+            $this->output,
+            "<question>$question</question>",
+            $default
+        );
+    }
+
     public function ask($question, callable $validator, $default = null)
     {
         return $this->dialog->askAndValidate(

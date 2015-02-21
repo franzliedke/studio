@@ -10,9 +10,11 @@ class Part extends AbstractPart
 
     public function setupPackage($composer, Filesystem $target)
     {
-        $composer->{'require-dev'}['phpunit/phpunit'] = '4.*';
+        if ($this->input->confirm('Do you want to set up PhpUnit as a testing tool?')) {
+            $composer->{'require-dev'}['phpunit/phpunit'] = '4.*';
 
-        $target->write('phpunit.xml', $this->getStubFile('phpunit.xml'));
+            $target->write('phpunit.xml', $this->getStubFile('phpunit.xml'));
+        }
     }
 
     protected function getStubFile($name)
