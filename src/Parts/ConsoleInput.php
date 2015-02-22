@@ -38,6 +38,8 @@ class ConsoleInput implements PartInputInterface
 
     public function ask($question, callable $validator, $default = null)
     {
+        if ($default) $question = "$question [$default]";
+
         return $this->dialog->askAndValidate(
             $this->output,
             "<question>$question</question> ",
