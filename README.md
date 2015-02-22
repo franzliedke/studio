@@ -11,6 +11,7 @@ Studio also knows how to configure development tools that might be part of your 
 This includes the following:
 
 - PhpUnit
+- Autoloading (src & tests)
 - TravisCI
 
 This list will only get longer in the future.
