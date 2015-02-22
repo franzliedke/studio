@@ -13,6 +13,22 @@ class Part extends AbstractPart
         if ($this->input->confirm('Do you want to set up PhpUnit as a testing tool?')) {
             $composer->{'require-dev'}['phpunit/phpunit'] = '4.*';
 
+            // Add autoloading rules for tests
+            $namespace = head(array_keys((array) $composer->autoload->{'psr-4'}));
+            $namespace .= '\\Tests';
+
+            @$composer->{'autoload-dev'}->{'psr-4'}->{"$namespace\\"} = 'tests/';
+
+            // Create an example test file
+            $this->copyTo(
+                __DIR__ . '/stubs/tests/ExampleTest.php',
+                $target,
+                'tests/ExampleTest.php',
+                function ($content) use ($namespace) {
+                    return preg_replace('/namespace[^;]+;/', "namespace $namespace;", $content);
+                }
+            );
+
             $this->copyTo(__DIR__ . '/stubs/phpunit.xml', $target);
         }
     }
