@@ -45,6 +45,15 @@ This will include things like configuration for testing tools, Travis CI, and au
 
 This will clone the given Git repository to the `bar` directory and install its dependencies.
 
+### Remove a package
+
+Sometimes you want to throw away a package.
+You can do so with the `scrap` command, passing a path for a Studio-managed package:
+
+    studio scrap foo
+
+Don't worry - you'll be asked for a confirmation first.
+
 ## Contributing
 
 Feel free to send pull requests or create issues if you come across problems or have great ideas.
