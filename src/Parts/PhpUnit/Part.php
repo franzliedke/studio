@@ -13,13 +13,8 @@ class Part extends AbstractPart
         if ($this->input->confirm('Do you want to set up PhpUnit as a testing tool?')) {
             $composer->{'require-dev'}['phpunit/phpunit'] = '4.*';
 
-            $target->write('phpunit.xml', $this->getStubFile('phpunit.xml'));
+            $this->copyTo(__DIR__ . '/stubs/phpunit.xml', $target);
         }
-    }
-
-    protected function getStubFile($name)
-    {
-        return file_get_contents(__DIR__ . "/stubs/$name");
     }
 
 }

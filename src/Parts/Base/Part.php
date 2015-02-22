@@ -13,12 +13,7 @@ class Part extends AbstractPart
         $target->createDir('src');
         $target->createDir('tests');
 
-        $target->write('.gitignore', $this->getStubFile('gitignore.txt'));
-    }
-
-    protected function getStubFile($name)
-    {
-        return file_get_contents(__DIR__ . "/stubs/$name");
+        $this->copyTo(__DIR__ . '/stubs/gitignore.txt', $target, '.gitignore');
     }
 
 }

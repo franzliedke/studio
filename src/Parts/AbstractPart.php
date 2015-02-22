@@ -22,4 +22,11 @@ abstract class AbstractPart implements PartInterface
         return $this;
     }
 
+    protected function copyTo($file, Filesystem $target, $targetName = null)
+    {
+        $targetName = $targetName ?: basename($file);
+
+        $target->write($targetName, file_get_contents($file));
+    }
+
 }
