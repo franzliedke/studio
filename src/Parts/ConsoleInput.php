@@ -36,23 +36,23 @@ class ConsoleInput implements PartInputInterface
         );
     }
 
-    public function ask($question, callable $validator, $default = null)
+    public function ask($question, $regex, $default = null)
     {
         if ($default) $question = "$question [$default]";
 
         return $this->dialog->askAndValidate(
             $this->output,
             "<question>$question</question> ",
-            $this->validateWith($validator),
+            $this->validateWith($regex),
             false,
             $default
         );
     }
 
-    protected function validateWith($validator)
+    protected function validateWith($regex)
     {
-        return function ($answer) use ($validator) {
-            if ($validator($answer)) return $answer;
+        return function ($answer) use ($regex) {
+            if (preg_match($regex, $answer)) return $answer;
 
             throw new \RuntimeException('Invalid. Try again.');
         };
