@@ -19,6 +19,9 @@
         "composer/composer": "dev-master"
     },
     "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        },
         "class": "Studio\\Composer\\StudioPlugin"
     },
     "bin": ["bin/studio"]
