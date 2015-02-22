@@ -27,9 +27,11 @@ class ConsoleInput implements PartInputInterface
 
     public function confirm($question, $default = false)
     {
+        $options = $default ? 'Y|n' : 'y|N';
+
         return $this->dialog->askConfirmation(
             $this->output,
-            "<question>$question</question> ",
+            "<question>$question [$options]</question> ",
             $default
         );
     }
