@@ -50,6 +50,9 @@ class Config
 
     public function removePackage(Package $package)
     {
+        // Ensure our packages are loaded
+        $this->getPackages();
+
         $key = $package->getComposerId();
 
         if (isset($this->packages[$key])) {
