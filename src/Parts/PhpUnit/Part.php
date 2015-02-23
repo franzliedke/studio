@@ -15,7 +15,7 @@ class Part extends AbstractPart
 
             // Add autoloading rules for tests
             $namespace = head(array_keys((array) $composer->autoload->{'psr-4'}));
-            $namespace .= '\\Tests';
+            $namespace .= 'Tests';
 
             @$composer->{'autoload-dev'}->{'psr-4'}->{"$namespace\\"} = 'tests/';
 
