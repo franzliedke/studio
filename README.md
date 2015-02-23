@@ -10,8 +10,9 @@ It will take care of autoloading your library's dependencies, and you won't have
 Studio also knows how to configure development tools that might be part of your workflow.
 This includes the following:
 
-- PhpUnit
 - Autoloading (src & tests)
+- PhpUnit
+- PhpSpec
 - TravisCI
 
 This list will only get longer in the future.
