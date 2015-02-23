@@ -26,6 +26,7 @@ class CreateCommand extends Command
         'Studio\Parts\Base\Part',
         'Studio\Parts\Composer\Part',
         'Studio\Parts\PhpUnit\Part',
+        'Studio\Parts\PhpSpec\Part',
         'Studio\Parts\TravisCI\Part',
     ];
 
