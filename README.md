@@ -55,6 +55,11 @@ You can do so with the `scrap` command, passing a path for a Studio-managed pack
 
 Don't worry - you'll be asked for a confirmation first.
 
+## License
+
+This code is published under the [MIT License](http://opensource.org/licenses/MIT).
+This means you can do almost anything with it, as long as the copyright notice and the accompanying license file is left intact.
+
 ## Contributing
 
 Feel free to send pull requests or create issues if you come across problems or have great ideas.
