@@ -57,7 +57,13 @@ class SkeletonCreator implements CreatorInterface
             $part->setupPackage($config, $this->filesystem);
         }
 
-        $this->filesystem->write('composer.json', json_encode($config, JSON_PRETTY_PRINT));
+        $this->filesystem->write(
+            'composer.json',
+            json_encode(
+                $config,
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+            )
+        );
     }
 
 }
