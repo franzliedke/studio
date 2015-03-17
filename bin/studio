@@ -6,6 +6,7 @@ require __DIR__.'/../../../autoload.php';
 use Studio\Config\Config;
 use Studio\Config\FileStorage;
 use Studio\Console\CreateCommand;
+use Studio\Console\LoadCommand;
 use Studio\Console\ScrapCommand;
 use Studio\Shell\TaskRunner;
 use Symfony\Component\Console\Application;
@@ -17,5 +18,6 @@ $shell = new TaskRunner();
 
 $application = new Application();
 $application->add(new CreateCommand($config, $shell));
+$application->add(new LoadCommand($config, $shell));
 $application->add(new ScrapCommand($config, $shell));
 $application->run();
