@@ -7,6 +7,6 @@ interface PartInputInterface
 
     public function confirm($question);
 
-    public function ask($question, $regex, $default = null);
+    public function ask($question, $regex, $errorText = null, $default = null);
 
 }

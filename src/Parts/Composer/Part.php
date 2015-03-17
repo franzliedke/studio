@@ -13,13 +13,15 @@ class Part extends AbstractPart
         // Ask for package name
         $composer->name = $this->input->ask(
             'Please name this package',
-            '/[[:alnum:]]+\/[[:alnum:]]+/'
+            '/[[:alnum:]]+\/[[:alnum:]]+/',
+            'Please enter a valid package name in the format "vendor/name".'
         );
 
         // Ask for the root namespace
         $namespace = $this->input->ask(
             'Please provide a default namespace (PSR-4)',
             '/([[:alnum:]]+\\\\?)+/',
+            'Please enter a valid PHP namespace',
             $this->makeDefaultNamespace($composer->name)
         );
 
