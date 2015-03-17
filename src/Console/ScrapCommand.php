@@ -6,7 +6,7 @@ use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use Studio\Package;
 use Studio\Config\Config;
-use Studio\Shell\TaskRunner;
+use Studio\Shell\Shell;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,15 +19,12 @@ class ScrapCommand extends Command
 
     protected $config;
 
-    protected $shell;
 
-
-    public function __construct(Config $config, TaskRunner $shell)
+    public function __construct(Config $config)
     {
         parent::__construct();
 
         $this->config = $config;
-        $this->shell = $shell;
     }
 
     protected function configure()
@@ -60,21 +57,8 @@ class ScrapCommand extends Command
         $output->writeln("<info>Package successfully removed.</info>");
 
         $output->writeln("<comment>Dumping autoloads...</comment>");
-        $this->runOnShell('composer dump-autoload');
+        Shell::run('composer dump-autoload');
         $output->writeln("<info>Autoloads successfully generated.</info>");
-    }
-
-    protected function runOnShell($task, $workDir = null)
-    {
-        $process = $this->shell->process($task, $workDir);
-        $process->run();
-
-        if (! $process->isSuccessful()) {
-            $error = $process->getErrorOutput();
-            throw new \RuntimeException("Error while running Composer: $error");
-        }
-
-        return $process->getOutput();
     }
 
     protected function abortDeletion($path, OutputInterface $output)

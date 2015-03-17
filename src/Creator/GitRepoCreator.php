@@ -3,7 +3,7 @@
 namespace Studio\Creator;
 
 use Studio\Package;
-use Studio\Shell\TaskRunner;
+use Studio\Shell\Shell;
 
 class GitRepoCreator implements CreatorInterface
 {
@@ -12,17 +12,11 @@ class GitRepoCreator implements CreatorInterface
 
     protected $path;
 
-    /**
-     * @var TaskRunner
-     */
-    protected $shell;
 
-
-    public function __construct($repo, $path, TaskRunner $shell)
+    public function __construct($repo, $path)
     {
         $this->repo = $repo;
         $this->path = $path;
-        $this->shell = $shell;
     }
 
     /**
@@ -39,8 +33,7 @@ class GitRepoCreator implements CreatorInterface
 
     protected function cloneRepository()
     {
-        $this->shell->process("git clone $this->repo $this->path")
-                    ->run();
+        Shell::run("git clone $this->repo $this->path");
     }
 
 }

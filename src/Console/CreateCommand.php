@@ -3,7 +3,7 @@
 namespace Studio\Console;
 
 use Studio\Parts\ConsoleInput;
-use Studio\Shell\TaskRunner;
+use Studio\Shell\Shell;
 use Studio\Config\Config;
 use Studio\Creator\CreatorInterface;
 use Studio\Creator\GitRepoCreator;
@@ -20,8 +20,6 @@ class CreateCommand extends Command
 
     protected $config;
 
-    protected $shell;
-
     protected $partClasses = [
         'Studio\Parts\Base\Part',
         'Studio\Parts\Composer\Part',
@@ -36,12 +34,11 @@ class CreateCommand extends Command
     protected $partInput;
 
 
-    public function __construct(Config $config, TaskRunner $shell)
+    public function __construct(Config $config)
     {
         parent::__construct();
 
         $this->config = $config;
-        $this->shell = $shell;
     }
 
     protected function configure()
@@ -75,25 +72,12 @@ class CreateCommand extends Command
         $output->writeln("<info>Package directory $path created.</info>");
 
         $output->writeln("<comment>Running composer install for new package...</comment>");
-        $this->runOnShell('composer install --prefer-dist', $package->getPath());
+        Shell::run('composer install --prefer-dist', $package->getPath());
         $output->writeln("<info>Package successfully created.</info>");
 
         $output->writeln("<comment>Dumping autoloads...</comment>");
-        $this->runOnShell('composer dump-autoload');
+        Shell::run('composer dump-autoload');
         $output->writeln("<info>Autoloads successfully generated.</info>");
-    }
-
-    protected function runOnShell($task, $workDir = null)
-    {
-        $process = $this->shell->process($task, $workDir);
-        $process->run();
-
-        if (! $process->isSuccessful()) {
-            $error = $process->getErrorOutput();
-            throw new \RuntimeException("Error while running Composer: $error");
-        }
-
-        return $process->getOutput();
     }
 
     /**
@@ -107,7 +91,7 @@ class CreateCommand extends Command
         $path = $input->getArgument('path');
 
         if ($input->getOption('git')) {
-            return new GitRepoCreator($input->getOption('git'), $path, $this->shell);
+            return new GitRepoCreator($input->getOption('git'), $path);
         } else {
             $creator = new SkeletonCreator($path);
             $this->installParts($creator);
