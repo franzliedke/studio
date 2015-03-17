@@ -27,7 +27,13 @@ class FileStorage implements StorageInterface
 
     protected function writeToFile(array $data)
     {
-        file_put_contents($this->file, json_encode($data, JSON_PRETTY_PRINT));
+        file_put_contents(
+            $this->file,
+            json_encode(
+                $data,
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+            )
+        );
     }
 
     protected function readFromFile()
