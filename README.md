@@ -46,6 +46,12 @@ This will include things like configuration for testing tools, Travis CI, and au
 
 This will clone the given Git repository to the `bar` directory and install its dependencies.
 
+### Import a package from an existing directory
+
+    studio load baz
+
+This will make sure the package in the `baz` directory will be autoloadable using Composer.
+
 ### Remove a package
 
 Sometimes you want to throw away a package.
