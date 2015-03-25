@@ -75,9 +75,7 @@ class CreateCommand extends Command
         Shell::run('composer install --prefer-dist', $package->getPath());
         $output->writeln("<info>Package successfully created.</info>");
 
-        $output->writeln("<comment>Dumping autoloads...</comment>");
-        Shell::run('composer dump-autoload');
-        $output->writeln("<info>Autoloads successfully generated.</info>");
+        $this->refreshAutoloads($output);
     }
 
     /**
@@ -116,6 +114,19 @@ class CreateCommand extends Command
         return array_map(function ($class) {
             return (new $class)->setInput($this->partInput);
         }, $this->partClasses);
+    }
+
+    /**
+     * @param OutputInterface $output
+     * @return void
+     */
+    protected function refreshAutoloads(OutputInterface $output)
+    {
+        if (file_exists(getcwd() . 'composer.json')) {
+            $output->writeln("<comment>Dumping autoloads...</comment>");
+            Shell::run('composer dump-autoload');
+            $output->writeln("<info>Autoloads successfully generated.</info>");
+        }
     }
 
 }
