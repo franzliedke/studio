@@ -95,10 +95,10 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
             $projectFile = "vendor/composer/autoload_$type.php";
             $projectAutoloads = file_exists($projectFile) ? require $projectFile : [];
 
-            $toMerge = $this->getAutoloadersForType($directories, $type)
-                ->reduce('array_merge', []);
-
-            $toMerge = array_diff_key($toMerge, $projectAutoloads);
+            $toMerge = array_diff_key(
+                $this->getAutoloadersForType($directories, $type),
+                $projectAutoloads
+            );
 
             $this->mergeToEnd($projectFile, $toMerge);
         }
@@ -107,7 +107,7 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
     /**
      * @param array $directories
      * @param string $type
-     * @return Collection
+     * @return array
      */
     protected function getAutoloadersForType(array $directories, $type)
     {
@@ -115,7 +115,7 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
             return "$directory/vendor/composer/autoload_$type.php";
         })->filter('file_exists')->map(function ($file) {
             return require $file;
-        });
+        })->reduce('array_merge', []);
     }
 
     protected function mergeToEnd($autoloadFile, array $newRules)
