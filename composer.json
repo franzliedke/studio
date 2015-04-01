@@ -20,6 +20,9 @@
     "require-dev": {
         "composer/composer": "dev-master"
     },
+    "replace": {
+        "franzliedke/studio": "self.version"
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "1.0.x-dev"
