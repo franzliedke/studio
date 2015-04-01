@@ -1,5 +1,5 @@
 {
-    "name": "franzliedke/studio",
+    "name": "franzl/studio",
     "description": "Develop your Composer libraries with style",
     "keywords": ["composer", "development", "workflow"],
     "type": "composer-plugin",
