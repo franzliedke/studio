@@ -21,10 +21,10 @@ This list will only get longer in the future.
 
 Studio can be installed globally or per project, with Composer:
 
-Globally (recommended): `composer global require franzliedke/studio`
+Globally (recommended): `composer global require franzl/studio`
 (use as `studio`)
 
-Per project: `composer require --dev franzliedke/studio`
+Per project: `composer require --dev franzl/studio`
 (use as `vendor/bin/studio`)
 
 ## Usage
