@@ -57,7 +57,7 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
         $autoloaders = $finder->in($directories)
                               ->files()
                               ->name('autoload.php')
-                              ->depth('<= 3')
+                              ->depth('<= 2')
                               ->followLinks();
 
         $includes = [];
