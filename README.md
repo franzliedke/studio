@@ -24,6 +24,8 @@ Studio can be installed globally or per project, with Composer:
 Globally (recommended): `composer global require franzl/studio`
 (use as `studio`)
 
+>Make sure to place the ~/.composer/vendor/bin directory in your PATH so the `studio` executable can be located by your system.
+
 Per project: `composer require --dev franzl/studio`
 (use as `vendor/bin/studio`)
 
