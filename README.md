@@ -31,19 +31,15 @@ Per project: `composer require --dev franzl/studio`
 
 ## Usage
 
-All command should be run from the root of your project, where the `composer.json` file exists.
+All commands should be run from the root of your project, where the `composer.json` file is located.
 
 ### Create a new package skeleton
 
-    studio create foo
+    studio create foo/bar
 
 This command creates a skeleton for a new Composer package, already filled with some helpful files to get you started.
-In the above example, we're creating a new package in the folder `foo` in your project root.
+In the above example, we're creating a new package in the folder `foo/bar` in your project root.
 All its dependencies will be available when using Composer.
-
-If you want to create a package into a subfolder, simply prepend the path to the package name :
-
-    studio create foo/bar
 
 During creation, you will be asked a series of questions to configure your skeleton.
 This will include things like configuration for testing tools, Travis CI, and autoloading.
