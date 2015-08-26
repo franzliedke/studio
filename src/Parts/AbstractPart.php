@@ -3,7 +3,7 @@
 namespace Studio\Parts;
 
 use Closure;
-use League\Flysystem\Filesystem;
+use Studio\Filesystem\Directory;
 
 abstract class AbstractPart implements PartInterface
 {
@@ -14,7 +14,7 @@ abstract class AbstractPart implements PartInterface
     protected $input;
 
 
-    abstract public function setupPackage($composer, Filesystem $target);
+    abstract public function setupPackage($composer, Directory $target);
 
     public function setInput(PartInputInterface $input)
     {
@@ -23,7 +23,7 @@ abstract class AbstractPart implements PartInterface
         return $this;
     }
 
-    protected function copyTo($file, Filesystem $target, $targetName = null, Closure $handler = null)
+    protected function copyTo($file, Directory $target, $targetName = null, Closure $handler = null)
     {
         $targetName = $targetName ?: basename($file);
 

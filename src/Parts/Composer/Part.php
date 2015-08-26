@@ -2,13 +2,13 @@
 
 namespace Studio\Parts\Composer;
 
-use League\Flysystem\Filesystem;
+use Studio\Filesystem\Directory;
 use Studio\Parts\AbstractPart;
 
 class Part extends AbstractPart
 {
 
-    public function setupPackage($composer, Filesystem $target)
+    public function setupPackage($composer, Directory $target)
     {
         // Ask for package name
         $composer->name = $this->input->ask(

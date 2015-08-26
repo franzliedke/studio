@@ -2,8 +2,7 @@
 
 namespace Studio\Creator;
 
-use League\Flysystem\Adapter\Local;
-use League\Flysystem\Filesystem;
+use Studio\Filesystem\Directory;
 use Studio\Parts\PartInterface;
 use Studio\Package;
 
@@ -16,9 +15,9 @@ class SkeletonCreator implements CreatorInterface
     protected $path;
 
     /**
-     * @var Filesystem
+     * @var Directory
      */
-    protected $filesystem;
+    protected $directory;
 
     /**
      * @var PartInterface[]
@@ -29,7 +28,7 @@ class SkeletonCreator implements CreatorInterface
     public function __construct($path)
     {
         $this->path = $path;
-        $this->filesystem = new Filesystem(new Local($path));
+        $this->directory = new Directory($path);
     }
 
     public function addPart(PartInterface $part)
@@ -54,10 +53,10 @@ class SkeletonCreator implements CreatorInterface
         $config = new \stdClass();
 
         foreach ($this->parts as $part) {
-            $part->setupPackage($config, $this->filesystem);
+            $part->setupPackage($config, $this->directory);
         }
 
-        $this->filesystem->write(
+        $this->directory->write(
             'composer.json',
             json_encode(
                 $config,

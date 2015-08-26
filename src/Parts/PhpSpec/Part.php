@@ -2,13 +2,13 @@
 
 namespace Studio\Parts\PhpSpec;
 
-use League\Flysystem\Filesystem;
+use Studio\Filesystem\Directory;
 use Studio\Parts\AbstractPart;
 
 class Part extends AbstractPart
 {
 
-    public function setupPackage($composer, Filesystem $target)
+    public function setupPackage($composer, Directory $target)
     {
         if ($this->input->confirm('Do you want to set up PhpSpec as a testing tool?')) {
             $composer->{'require-dev'}['phpspec/phpspec'] = '~2.0';
@@ -25,7 +25,7 @@ class Part extends AbstractPart
                 }
             );
 
-            $target->createDir('spec');
+            $target->makeDir('spec');
         }
     }
 

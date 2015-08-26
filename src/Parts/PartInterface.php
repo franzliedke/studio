@@ -2,11 +2,11 @@
 
 namespace Studio\Parts;
 
-use League\Flysystem\Filesystem;
+use Studio\Filesystem\Directory;
 
 interface PartInterface
 {
 
-    public function setupPackage($composer, Filesystem $target);
+    public function setupPackage($composer, Directory $target);
 
 }
