@@ -14,6 +14,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class CreateCommand extends Command
 {
@@ -61,7 +62,8 @@ class CreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->partInput = new ConsoleInput($this->getHelper('dialog'), $output);
+        $output = new SymfonyStyle($input, $output);
+        $this->partInput = new ConsoleInput($output);
 
         $creator = $this->makeCreator($input);
 
