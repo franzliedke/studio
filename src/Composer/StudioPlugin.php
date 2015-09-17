@@ -16,9 +16,20 @@ use Studio\Shell\Shell;
 
 class StudioPlugin implements PluginInterface, EventSubscriberInterface
 {
+    /**
+     * @var Composer
+     */
+    protected $composer;
+
+    /**
+     * @var IOInterface
+     */
+    protected $io;
+
     public function activate(Composer $composer, IOInterface $io)
     {
-        // ...
+        $this->composer = $composer;
+        $this->io = $io;
     }
 
     public static function getSubscribedEvents()
@@ -37,7 +48,9 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
         $config = $this->getConfig($studioFile);
         if ($config->hasPackages()) {
             $packages = $config->getPackages();
+            $this->io->write("[Studio] Merging subproject autoloaders...");
             $this->autoloadFrom($packages);
+            $this->io->write('done');
         }
     }
 
@@ -51,7 +64,9 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
             $packages = $config->getPackages();
 
             foreach ($packages as $directory) {
+                $this->io->write("[Studio] Updating subproject $directory...");
                 Shell::run('composer update', $directory);
+                $this->io->write('done');
             }
         }
     }
