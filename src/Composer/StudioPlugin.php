@@ -12,6 +12,7 @@ use Illuminate\Support\Collection;
 use Studio\Config\Config;
 use Studio\Config\FileStorage;
 use Symfony\Component\Finder\Finder;
+use Studio\Shell\Shell;
 
 class StudioPlugin implements PluginInterface, EventSubscriberInterface
 {
@@ -24,6 +25,7 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
     {
         return [
             ScriptEvents::POST_AUTOLOAD_DUMP => 'dumpAutoload',
+            ScriptEvents::POST_UPDATE_CMD => 'update',
         ];
     }
 
@@ -36,6 +38,21 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
         if ($config->hasPackages()) {
             $packages = $config->getPackages();
             $this->autoloadFrom($packages);
+        }
+    }
+
+    public function update(Event $event)
+    {
+        $path = $event->getComposer()->getPackage()->getTargetDir();
+        $studioFile = "{$path}studio.json";
+
+        $config = $this->getConfig($studioFile);
+        if ($config->hasPackages()) {
+            $packages = $config->getPackages();
+
+            foreach ($packages as $directory) {
+                Shell::run('composer update', $directory);
+            }
         }
     }
 
