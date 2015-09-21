@@ -7,6 +7,7 @@ use Studio\Shell\Shell;
 use Studio\Config\Config;
 use Studio\Creator\CreatorInterface;
 use Studio\Creator\GitRepoCreator;
+use Studio\Creator\GitSubmoduleCreator;
 use Studio\Creator\SkeletonCreator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -57,6 +58,12 @@ class CreateCommand extends Command
                 'g',
                 InputOption::VALUE_REQUIRED,
                 'If set, this will download the given Git repository instead of creating a new one.'
+            )
+            ->addOption(
+                'submodule',
+                'gs',
+                InputOption::VALUE_REQUIRED,
+                'If set, this will download the given Git repository (as submodule) instead of creating a new one.'
             );
     }
 
@@ -92,6 +99,8 @@ class CreateCommand extends Command
 
         if ($input->getOption('git')) {
             return new GitRepoCreator($input->getOption('git'), $path);
+        } elseif ($input->getOption('submodule')) {
+            return new GitSubmoduleCreator($input->getOption('submodule'), $path);
         } else {
             $creator = new SkeletonCreator($path);
             $this->installParts($creator);
