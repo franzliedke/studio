@@ -26,6 +26,11 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
      */
     protected $io;
 
+    /**
+     * @var  string|null
+     */
+    protected $targetDir;
+
     public function activate(Composer $composer, IOInterface $io)
     {
         $this->composer = $composer;
@@ -42,8 +47,8 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
 
     public function dumpAutoload(Event $event)
     {
-        $path = $event->getComposer()->getPackage()->getTargetDir();
-        $studioFile = "{$path}studio.json";
+        $this->targetDir = realpath($event->getComposer()->getPackage()->getTargetDir());
+        $studioFile = "{$this->targetDir}/studio.json";
 
         $config = $this->getConfig($studioFile);
         if ($config->hasPackages()) {
@@ -52,12 +57,14 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
             $this->autoloadFrom($packages);
             $this->io->write('done');
         }
+
+        $this->targetDir = null;
     }
 
     public function update(Event $event)
     {
-        $path = $event->getComposer()->getPackage()->getTargetDir();
-        $studioFile = "{$path}studio.json";
+        $this->targetDir = realpath($event->getComposer()->getPackage()->getTargetDir());
+        $studioFile = "{$this->targetDir}/studio.json";
 
         $config = $this->getConfig($studioFile);
         if ($config->hasPackages()) {
@@ -69,6 +76,8 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
                 $this->io->write('done');
             }
         }
+
+        $this->targetDir = null;
     }
 
     /**
@@ -119,12 +128,23 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
             $end = "\n);\n";
 
             $lines = array_map(function ($value, $key) {
-                return '    ' . var_export($key, true) . ' => ' . var_export($value, true) . ',';
+                return '    ' . var_export($key, true) . ' => array(' . $this->parseAutoloadPath($value[0]) . '),';
             }, $newRules, array_keys($newRules));
 
             return $start . implode("\n", $lines) . $end;
         }, file_get_contents($autoloadFile));
 
         file_put_contents($autoloadFile, $contents);
+    }
+
+    protected function parseAutoloadPath($value)
+    {
+        $dir = var_export($value, true);
+
+        if (! is_dir($this->targetDir)) {
+            return $dir;
+        }
+
+        return str_replace("'{$this->targetDir}", "\$baseDir . '", $dir);
     }
 }
