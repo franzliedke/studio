@@ -11,7 +11,6 @@ use Composer\Script\ScriptEvents;
 use Illuminate\Support\Collection;
 use Studio\Config\Config;
 use Studio\Config\FileStorage;
-use Symfony\Component\Finder\Finder;
 use Studio\Shell\Shell;
 
 class StudioPlugin implements PluginInterface, EventSubscriberInterface
