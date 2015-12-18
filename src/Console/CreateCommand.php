@@ -2,6 +2,7 @@
 
 namespace Studio\Console;
 
+use Studio\Package;
 use Studio\Parts\ConsoleInput;
 use Studio\Shell\Shell;
 use Studio\Config\Config;
@@ -83,7 +84,7 @@ class CreateCommand extends Command
         Shell::run('composer install --prefer-dist', $package->getPath());
         $output->writeln("<info>Package successfully created.</info>");
 
-        $this->refreshAutoloads($output);
+        $this->refreshAutoloads($output, $package);
     }
 
     /**
@@ -128,13 +129,14 @@ class CreateCommand extends Command
 
     /**
      * @param OutputInterface $output
+     * @param Package $package
      * @return void
      */
-    protected function refreshAutoloads(OutputInterface $output)
+    protected function refreshAutoloads(OutputInterface $output, Package $package)
     {
-        if (file_exists(getcwd() . 'composer.json')) {
+        if (file_exists(getcwd() . '/'  . $package->getPath() . '/composer.json')) {
             $output->writeln("<comment>Dumping autoloads...</comment>");
-            Shell::run('composer dump-autoload');
+            Shell::run('composer dump-autoload', $package->getPath());
             $output->writeln("<info>Autoloads successfully generated.</info>");
         }
     }
