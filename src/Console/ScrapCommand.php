@@ -5,13 +5,10 @@ namespace Studio\Console;
 use Studio\Package;
 use Studio\Config\Config;
 use Studio\Shell\Shell;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
-class ScrapCommand extends Command
+class ScrapCommand extends BaseCommand
 {
 
     protected $config;
@@ -36,35 +33,32 @@ class ScrapCommand extends Command
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function fire()
     {
-        $path = $input->getArgument('path');
+        $path = $this->input->getArgument('path');
 
-        if ($this->abortDeletion($path, $output)) {
-            $output->writeln("<comment>Aborted.</comment>");
+        if ($this->abortDeletion($path)) {
+            $this->output->note('Aborted.');
             return;
         }
 
         $package = Package::fromFolder($path);
         $this->config->removePackage($package);
 
-        $output->writeln("<comment>Removing package...</comment>");
+        $this->output->note('Removing package...');
         $filesystem = new Filesystem;
         $filesystem->remove($path);
-        $output->writeln("<info>Package successfully removed.</info>");
+        $this->output->success('Package successfully removed.');
 
-        $output->writeln("<comment>Dumping autoloads...</comment>");
+        $this->output->note('Dumping autoloads...');
         Shell::run('composer dump-autoload');
-        $output->writeln("<info>Autoloads successfully generated.</info>");
+        $this->output->success('Autoloads successfully generated.');
     }
 
-    protected function abortDeletion($path, OutputInterface $output)
+    protected function abortDeletion($path)
     {
-        $dialog = $this->getHelper('dialog');
-
-        return ! $dialog->askConfirmation(
-            $output,
-            "<question>Do you really want to scrap the package at $path? [y|N]</question> ",
+        return ! $this->output->confirm(
+            "<question>Do you really want to scrap the package at $path?</question> ",
             false
         );
     }

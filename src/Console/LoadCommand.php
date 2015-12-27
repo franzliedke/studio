@@ -5,12 +5,9 @@ namespace Studio\Console;
 use Studio\Package;
 use Studio\Config\Config;
 use Studio\Shell\Shell;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
-class LoadCommand extends Command
+class LoadCommand extends BaseCommand
 {
 
     protected $config;
@@ -35,16 +32,16 @@ class LoadCommand extends Command
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function fire()
     {
-        $package = Package::fromFolder($input->getArgument('path'));
+        $package = Package::fromFolder($this->input->getArgument('path'));
         $this->config->addPackage($package);
 
-        $output->writeln("<info>Package loaded successfully.</info>");
+        $this->output->note('Package loaded successfully.');
 
-        $output->writeln("<comment>Dumping autoloads...</comment>");
+        $this->output->note('Dumping autoloads...');
         Shell::run('composer dump-autoload');
-        $output->writeln("<info>Autoloads successfully generated.</info>");
+        $this->output->success('Autoloads successfully generated.');
     }
 
 }

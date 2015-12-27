@@ -9,14 +9,11 @@ use Studio\Creator\CreatorInterface;
 use Studio\Creator\GitRepoCreator;
 use Studio\Creator\GitSubmoduleCreator;
 use Studio\Creator\SkeletonCreator;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
-class CreateCommand extends Command
+class CreateCommand extends BaseCommand
 {
 
     protected $config;
@@ -66,24 +63,23 @@ class CreateCommand extends Command
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function fire()
     {
-        $output = new SymfonyStyle($input, $output);
-        $this->partInput = new ConsoleInput($output);
+        $this->partInput = new ConsoleInput($this->output);
 
-        $creator = $this->makeCreator($input);
+        $creator = $this->makeCreator($this->input);
 
         $package = $creator->create();
         $this->config->addPackage($package);
 
         $path = $package->getPath();
-        $output->writeln("<info>Package directory $path created.</info>");
+        $this->output->success("Package directory $path created.");
 
-        $output->writeln("<comment>Running composer install for new package...</comment>");
+        $this->output->note('Running composer install for new package...');
         Shell::run('composer install --prefer-dist', $package->getPath());
-        $output->writeln("<info>Package successfully created.</info>");
+        $this->output->success('Package successfully created.');
 
-        $this->refreshAutoloads($output);
+        $this->refreshAutoloads();
     }
 
     /**
@@ -127,15 +123,14 @@ class CreateCommand extends Command
     }
 
     /**
-     * @param OutputInterface $output
      * @return void
      */
-    protected function refreshAutoloads(OutputInterface $output)
+    protected function refreshAutoloads()
     {
         if (file_exists(getcwd() . 'composer.json')) {
-            $output->writeln("<comment>Dumping autoloads...</comment>");
+            $this->output->note('Dumping autoloads...');
             Shell::run('composer dump-autoload');
-            $output->writeln("<info>Autoloads successfully generated.</info>");
+            $this->output->success('Autoloads successfully generated.');
         }
     }
 
