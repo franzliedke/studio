@@ -127,7 +127,7 @@ class CreateCommand extends BaseCommand
      */
     protected function refreshAutoloads()
     {
-        if (file_exists(getcwd() . 'composer.json')) {
+        if (file_exists(getcwd() . '/composer.json')) {
             $this->output->note('Dumping autoloads...');
             Shell::run('composer dump-autoload');
             $this->output->success('Autoloads successfully generated.');
