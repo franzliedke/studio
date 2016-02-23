@@ -57,6 +57,8 @@ class ScrapCommand extends BaseCommand
 
     protected function abortDeletion($path)
     {
+        $this->output->caution("This will delete the entire $path folder and all files within.");
+
         return ! $this->output->confirm(
             "<question>Do you really want to scrap the package at $path?</question> ",
             false
