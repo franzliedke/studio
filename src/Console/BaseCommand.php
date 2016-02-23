@@ -24,6 +24,8 @@ abstract class BaseCommand extends Command
     {
         $this->input = $input;
         $this->output = new SymfonyStyle($input, $output);
+
+        $this->fire();
     }
 
     abstract protected function fire();
