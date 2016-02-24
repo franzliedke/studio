@@ -2,6 +2,8 @@
 
 namespace Studio;
 
+use InvalidArgumentException;
+
 class Package
 {
 
@@ -14,7 +16,13 @@ class Package
 
     public static function fromFolder($path)
     {
-        $composer = json_decode(file_get_contents("$path/composer.json"));
+        $composerFile = "$path/composer.json";
+
+        if (!file_exists($composerFile)) {
+            throw new InvalidArgumentException("Unable to detect Composer package in $path.");
+        }
+
+        $composer = json_decode(file_get_contents($composerFile));
 
         list($vendor, $name) = explode('/', $composer->name, 2);
 
