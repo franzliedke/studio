@@ -24,6 +24,10 @@ class Package
 
         $composer = json_decode(file_get_contents($composerFile));
 
+        if (!$composer->name) {
+            throw new InvalidArgumentException("Unable to load package name from $path/composer.json.");
+        }
+
         list($vendor, $name) = explode('/', $composer->name, 2);
 
         return new static(
