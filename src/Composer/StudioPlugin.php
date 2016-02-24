@@ -57,7 +57,7 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
 
             foreach ($config->getPackages() as $package => $path) {
                 $io->writeError("[Studio] Registering package $package with $path");
-                $repoManager->addRepository(new PathRepository(
+                $repoManager->prependRepository(new PathRepository(
                     ['url' => $path],
                     $io,
                     $composerConfig
