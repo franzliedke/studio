@@ -78,8 +78,6 @@ class CreateCommand extends BaseCommand
         $this->output->note('Running composer install for new package...');
         Shell::run('composer install --prefer-dist', $package->getPath());
         $this->output->success('Package successfully created.');
-
-        $this->refreshAutoloads();
     }
 
     /**
@@ -120,18 +118,6 @@ class CreateCommand extends BaseCommand
         return array_map(function ($class) {
             return (new $class)->setInput($this->partInput);
         }, $this->partClasses);
-    }
-
-    /**
-     * @return void
-     */
-    protected function refreshAutoloads()
-    {
-        if (file_exists(getcwd() . '/composer.json')) {
-            $this->output->note('Dumping autoloads...');
-            Shell::run('composer dump-autoload');
-            $this->output->success('Autoloads successfully generated.');
-        }
     }
 
 }

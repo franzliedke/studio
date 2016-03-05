@@ -49,10 +49,6 @@ class ScrapCommand extends BaseCommand
         $filesystem = new Filesystem;
         $filesystem->remove($path);
         $this->output->success('Package successfully removed.');
-
-        $this->output->note('Dumping autoloads...');
-        Shell::run('composer dump-autoload');
-        $this->output->success('Autoloads successfully generated.');
     }
 
     protected function abortDeletion($path)
