@@ -4,8 +4,9 @@ Develop your Composer libraries with style.
 
 This package makes it easy to develop Composer packages while using them.
 
-Instead of installing the packages you're actively working on as a dependency, use Studio to manage your libraries.
-It will take care of autoloading your library's dependencies, and you won't have to develop in the `vendor` directory.
+Instead of installing the packages you're working on from the Packagist repository, use Studio to symlink them from the filesystem instead.
+Under the hood, it uses Composer's [path repositories](https://getcomposer.org/doc/05-repositories.md#path) to do so.
+As a result, you won't have to develop in the `vendor` directory.
 
 Studio also knows how to configure development tools that might be part of your workflow.
 This includes the following:
