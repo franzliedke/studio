@@ -4,7 +4,6 @@ namespace Studio\Console;
 
 use Studio\Package;
 use Studio\Config\Config;
-use Studio\Shell\Shell;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Filesystem\Filesystem;
 
