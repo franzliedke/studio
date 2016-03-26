@@ -16,7 +16,7 @@ class Shell
         $process->run();
 
         if (! $process->isSuccessful()) {
-            $command = collect(explode(' ', $task))->first();
+            $command = preg_replace('/ .+$/', '', $task);
             $error = $process->getErrorOutput();
             throw new RuntimeException("Error while running $command: $error");
         }
