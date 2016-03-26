@@ -2,6 +2,7 @@
 
 namespace Studio\Shell;
 
+use RuntimeException;
 use Symfony\Component\Process\Process;
 
 class Shell
@@ -17,7 +18,7 @@ class Shell
         if (! $process->isSuccessful()) {
             $command = collect(explode(' ', $task))->first();
             $error = $process->getErrorOutput();
-            throw new \RuntimeException("Error while running $command: $error");
+            throw new RuntimeException("Error while running $command: $error");
         }
 
         return $process->getOutput();
