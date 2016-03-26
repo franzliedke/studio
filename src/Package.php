@@ -30,11 +30,7 @@ class Package
 
         list($vendor, $name) = explode('/', $composer->name, 2);
 
-        return new static(
-            $vendor,
-            $name,
-            $path
-        );
+        return new static($vendor, $name, $path);
     }
 
     public function __construct($vendor, $name, $path)
