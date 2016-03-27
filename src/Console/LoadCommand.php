@@ -36,7 +36,7 @@ class LoadCommand extends BaseCommand
         $package = Package::fromFolder($this->input->getArgument('path'));
         $this->config->addPackage($package);
 
-        $this->output->success('Package loaded successfully.');
+        $this->io->success('Package loaded successfully.');
     }
 
 }

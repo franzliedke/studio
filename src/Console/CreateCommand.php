@@ -66,23 +66,23 @@ class CreateCommand extends BaseCommand
 
     protected function fire()
     {
-        $this->partInput = new ConsoleInput($this->output);
+        $this->partInput = new ConsoleInput($this->io);
 
         $creator = $this->makeCreator($this->input);
 
         $package = $creator->create();
 
         $path = $package->getPath();
-        $this->output->success("Package directory $path created.");
+        $this->io->success("Package directory $path created.");
 
-        $this->output->note('Running composer install for new package...');
+        $this->io->note('Running composer install for new package...');
         Shell::run('composer install --prefer-dist', $package->getPath());
-        $this->output->success('Package successfully created.');
+        $this->io->success('Package successfully created.');
 
         if ($this->shouldLoadNewPackage()) {
             $this->getApplication()->find('load')->run(
                 new ArrayInput(['path' => $path]),
-                $this->trueOutput
+                $this->output
             );
         }
     }
@@ -132,7 +132,7 @@ class CreateCommand extends BaseCommand
         if (!file_exists('composer.json')) {
             return false;
         } else if (!file_exists('studio.json')) {
-            return $this->output->confirm(
+            return $this->io->confirm(
                 'Do you want to load this package in the surrounding Composer package using Studio?',
                 false
             );

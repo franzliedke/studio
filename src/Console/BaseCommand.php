@@ -19,23 +19,23 @@ abstract class BaseCommand extends Command
     /**
      * @var \Symfony\Component\Console\Output\OutputInterface
      */
-    protected $trueOutput;
+    protected $output;
 
     /**
      * @var \Symfony\Component\Console\Style\StyleInterface
      */
-    protected $output;
+    protected $io;
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->input = $input;
-        $this->trueOutput = $output;
-        $this->output = new SymfonyStyle($input, $output);
+        $this->output = $output;
+        $this->io = new SymfonyStyle($input, $output);
 
         try {
             $this->fire();
         } catch (Exception $e) {
-            $this->output->error($e->getMessage());
+            $this->io->error($e->getMessage());
         }
     }
 

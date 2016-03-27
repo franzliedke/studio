@@ -37,24 +37,24 @@ class ScrapCommand extends BaseCommand
         $path = $this->input->getArgument('path');
 
         if ($this->abortDeletion($path)) {
-            $this->output->note('Aborted.');
+            $this->io->note('Aborted.');
             return;
         }
 
         $package = Package::fromFolder($path);
         $this->config->removePackage($package);
 
-        $this->output->note('Removing package...');
+        $this->io->note('Removing package...');
         $filesystem = new Filesystem;
         $filesystem->remove($path);
-        $this->output->success('Package successfully removed.');
+        $this->io->success('Package successfully removed.');
     }
 
     protected function abortDeletion($path)
     {
-        $this->output->caution("This will delete the entire $path folder and all files within.");
+        $this->io->caution("This will delete the entire $path folder and all files within.");
 
-        return ! $this->output->confirm(
+        return ! $this->io->confirm(
             "<question>Do you really want to scrap the package at $path?</question> ",
             false
         );
