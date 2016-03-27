@@ -14,8 +14,8 @@ class Part extends AbstractPart
             $composer->{'require-dev'}['phpunit/phpunit'] = '4.*';
 
             // Add autoloading rules for tests
-            $namespace = head(array_keys((array) $composer->autoload->{'psr-4'}));
-            $namespace .= 'Tests';
+            $psr4Autoloading = (array) $composer->autoload->{'psr-4'};
+            $namespace = key($psr4Autoloading).'Tests';
 
             @$composer->{'autoload-dev'}->{'psr-4'}->{"$namespace\\"} = 'tests/';
 
