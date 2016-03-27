@@ -17,6 +17,11 @@ abstract class BaseCommand extends Command
     protected $input;
 
     /**
+     * @var \Symfony\Component\Console\Output\OutputInterface
+     */
+    protected $trueOutput;
+
+    /**
      * @var \Symfony\Component\Console\Style\StyleInterface
      */
     protected $output;
@@ -24,6 +29,7 @@ abstract class BaseCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->input = $input;
+        $this->trueOutput = $output;
         $this->output = new SymfonyStyle($input, $output);
 
         try {

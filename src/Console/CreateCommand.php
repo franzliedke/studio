@@ -9,6 +9,7 @@ use Studio\Creator\CreatorInterface;
 use Studio\Creator\GitRepoCreator;
 use Studio\Creator\GitSubmoduleCreator;
 use Studio\Creator\SkeletonCreator;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -70,7 +71,6 @@ class CreateCommand extends BaseCommand
         $creator = $this->makeCreator($this->input);
 
         $package = $creator->create();
-        $this->config->addPackage($package);
 
         $path = $package->getPath();
         $this->output->success("Package directory $path created.");
@@ -78,6 +78,13 @@ class CreateCommand extends BaseCommand
         $this->output->note('Running composer install for new package...');
         Shell::run('composer install --prefer-dist', $package->getPath());
         $this->output->success('Package successfully created.');
+
+        if ($this->shouldLoadNewPackage()) {
+            $this->getApplication()->find('load')->run(
+                new ArrayInput(['path' => $path]),
+                $this->trueOutput
+            );
+        }
     }
 
     /**
@@ -118,6 +125,20 @@ class CreateCommand extends BaseCommand
         return array_map(function ($class) {
             return (new $class)->setInput($this->partInput);
         }, $this->partClasses);
+    }
+
+    protected function shouldLoadNewPackage()
+    {
+        if (!file_exists('composer.json')) {
+            return false;
+        } else if (!file_exists('studio.json')) {
+            return $this->output->confirm(
+                'Do you want to load this package in the surrounding Composer package using Studio?',
+                false
+            );
+        } else {
+            return true;
+        }
     }
 
 }
