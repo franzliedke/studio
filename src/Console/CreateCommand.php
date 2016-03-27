@@ -134,7 +134,7 @@ class CreateCommand extends BaseCommand
         } else if (!file_exists('studio.json')) {
             return $this->io->confirm(
                 'Do you want to load this package in the surrounding Composer package using Studio?',
-                false
+                true
             );
         } else {
             return true;
