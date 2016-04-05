@@ -21,7 +21,7 @@ class Config
         $this->storage = $storage;
     }
 
-    public function getPackages()
+    private function getPackages()
     {
         if (! $this->loaded) {
             $this->packages = $this->storage->load();
