@@ -7,18 +7,21 @@ use Studio\Package;
 class Config
 {
     /**
-     * @var Storage
+     * @var Serializer
      */
-    protected $storage;
+    protected $serializer;
 
     protected $paths;
 
     protected $loaded = false;
 
+    protected $file;
 
-    public function __construct(Storage $storage)
+
+    public function __construct($file, Serializer $serializer)
     {
-        $this->storage = $storage;
+        $this->file = $file;
+        $this->serializer = $serializer;
     }
 
     public static function make($file = null)
@@ -28,14 +31,23 @@ class Config
         }
 
         return new static(
-            new Version1Storage($file)
+            $file,
+            new Version1Serializer()
         );
+    }
+
+    protected function readPaths()
+    {
+        if (!file_exists($this->file)) return [];
+
+        $data = $this->readFromFile();
+        return $this->serializer->deserializePaths($data);
     }
 
     public function getPaths()
     {
         if (! $this->loaded) {
-            $this->paths = $this->storage->readPaths();
+            $this->paths = $this->readPaths();
             $this->loaded = true;
         }
 
@@ -48,7 +60,9 @@ class Config
         $this->getPaths();
 
         $this->paths[] = $package->getPath();
-        $this->storage->writePaths($this->paths);
+        $this->writeToFile(
+            $this->serializer->serializePaths($this->paths)
+        );
     }
 
     public function hasPackages()
@@ -68,7 +82,25 @@ class Config
 
         if (($key = array_search($path, $this->paths)) !== false) {
             unset($this->paths[$key]);
-            $this->storage->store($this->packages);
+            $this->writeToFile(
+                $this->serializer->serializePaths($this->paths)
+            );
         }
+    }
+
+    protected function writeToFile(array $data)
+    {
+        file_put_contents(
+            $this->file,
+            json_encode(
+                $data,
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+            )."\n"
+        );
+    }
+
+    protected function readFromFile()
+    {
+        return json_decode(file_get_contents($this->file), true);
     }
 }
