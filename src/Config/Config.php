@@ -31,6 +31,11 @@ class Config
         return $this->packages;
     }
 
+    public function getPaths()
+    {
+        return array_values($this->getPackages());
+    }
+
     public function addPackage(Package $package)
     {
         // Ensure our packages are loaded
