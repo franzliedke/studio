@@ -2,7 +2,7 @@
 
 namespace Studio\Config;
 
-class FileStorage implements StorageInterface
+class Version1Storage implements Storage
 {
     protected $file;
 
@@ -12,12 +12,22 @@ class FileStorage implements StorageInterface
         $this->file = $file;
     }
 
-    public function store($packages)
+    public function readPaths()
+    {
+        return array_values($this->load());
+    }
+
+    public function writePaths($paths)
+    {
+        $this->store($paths);
+    }
+
+    protected function store($packages)
     {
         $this->writeToFile(['packages' => $packages]);
     }
 
-    public function load()
+    protected function load()
     {
         if (!file_exists($this->file)) return [];
 

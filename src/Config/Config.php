@@ -7,61 +7,67 @@ use Studio\Package;
 class Config
 {
     /**
-     * @var StorageInterface
+     * @var Storage
      */
     protected $storage;
 
-    protected $packages;
+    protected $paths;
 
     protected $loaded = false;
 
 
-    public function __construct(StorageInterface $storage)
+    public function __construct(Storage $storage)
     {
         $this->storage = $storage;
     }
 
-    private function getPackages()
+    public static function make($file = null)
     {
-        if (! $this->loaded) {
-            $this->packages = $this->storage->load();
-            $this->loaded = true;
+        if (is_null($file)) {
+            $file = getcwd().'/studio.json';
         }
 
-        return $this->packages;
+        return new static(
+            new Version1Storage($file)
+        );
     }
 
     public function getPaths()
     {
-        return array_values($this->getPackages());
+        if (! $this->loaded) {
+            $this->paths = $this->storage->readPaths();
+            $this->loaded = true;
+        }
+
+        return $this->paths;
     }
 
     public function addPackage(Package $package)
     {
         // Ensure our packages are loaded
-        $this->getPackages();
+        $this->getPaths();
 
-        $this->packages[$package->getComposerId()] = $package->getPath();
-        $this->storage->store($this->packages);
+        $this->paths[] = $package->getPath();
+        $this->storage->writePaths($this->paths);
     }
 
     public function hasPackages()
     {
         // Ensure our packages are loaded
-        $this->getPackages();
+        $this->getPaths();
 
-        return ! empty($this->packages);
+        return ! empty($this->paths);
     }
 
     public function removePackage(Package $package)
     {
         // Ensure our packages are loaded
-        $this->getPackages();
+        $this->getPaths();
 
-        $key = $package->getComposerId();
+        $path = $package->getPath();
 
-        if (isset($this->packages[$key])) {
-            unset($this->packages[$key]);
+        if (($key = array_search($path, $this->paths)) !== false) {
+            unset($this->paths[$key]);
             $this->storage->store($this->packages);
         }
     }
