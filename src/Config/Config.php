@@ -32,7 +32,9 @@ class Config
 
         return new static(
             $file,
-            VersionedSerializer::withDefault(1, new Version1Serializer)
+            VersionedSerializer
+                ::withDefault(1, new Version1Serializer)
+                ->version(2, new Version2Serializer)
         );
     }
 
