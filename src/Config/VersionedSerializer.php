@@ -2,6 +2,20 @@
 
 namespace Studio\Config;
 
+/**
+ * A decorator for serializing from/to multiple versions
+ *
+ * We support several versions of the Studio config file.
+ *
+ * This serializer class uses the serializer according to
+ * the "version" field or the default one if no "version"
+ * is provided for reading.
+ *
+ * For writing, the serializer with the highest version
+ * number is used.
+ *
+ * @package Studio\Config
+ */
 class VersionedSerializer implements Serializer
 {
     /**
