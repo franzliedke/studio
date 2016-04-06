@@ -9,7 +9,7 @@ class Version1Serializer implements Serializer
         return array_values($obj['packages']);
     }
 
-    public function serializePaths($paths)
+    public function serializePaths(array $paths)
     {
         return ['packages' => $paths];
     }

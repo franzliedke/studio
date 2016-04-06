@@ -6,5 +6,5 @@ interface Serializer
 {
     public function deserializePaths($obj);
 
-    public function serializePaths($paths);
+    public function serializePaths(array $paths);
 }

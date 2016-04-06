@@ -50,7 +50,7 @@ class VersionedSerializer implements Serializer
         return $serializer->deserializePaths($obj);
     }
 
-    public function serializePaths($paths)
+    public function serializePaths(array $paths)
     {
         $lastVersion = max(array_keys($this->serializers));
         $serializer = $this->serializers[$lastVersion];
