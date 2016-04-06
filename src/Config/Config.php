@@ -58,18 +58,16 @@ class Config
 
     public function addPath($path)
     {
-        // ensure paths are loaded
+        // Ensure paths are loaded
         $this->getPaths();
 
         $this->paths[] = $path;
-        $this->writeToFile(
-            $this->serializer->serializePaths($this->paths)
-        );
+        $this->dump();
     }
 
     public function hasPackages()
     {
-        // Ensure our packages are loaded
+        // Ensure paths are loaded
         $this->getPaths();
 
         return ! empty($this->paths);
@@ -77,17 +75,22 @@ class Config
 
     public function removePackage(Package $package)
     {
-        // Ensure our packages are loaded
+        // Ensure paths are loaded
         $this->getPaths();
 
         $path = $package->getPath();
 
         if (($key = array_search($path, $this->paths)) !== false) {
             unset($this->paths[$key]);
-            $this->writeToFile(
-                $this->serializer->serializePaths($this->paths)
-            );
+            $this->dump();
         }
+    }
+
+    protected function dump()
+    {
+        $this->writeToFile(
+            $this->serializer->serializePaths($this->paths)
+        );
     }
 
     protected function writeToFile(array $data)
