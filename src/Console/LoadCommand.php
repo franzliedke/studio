@@ -2,7 +2,6 @@
 
 namespace Studio\Console;
 
-use Studio\Package;
 use Studio\Config\Config;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -23,7 +22,7 @@ class LoadCommand extends BaseCommand
     {
         $this
             ->setName('load')
-            ->setDescription('Load a package to be managed with Studio')
+            ->setDescription('Load a path to be managed with Studio')
             ->addArgument(
                 'path',
                 InputArgument::REQUIRED,
@@ -33,10 +32,11 @@ class LoadCommand extends BaseCommand
 
     protected function fire()
     {
-        $package = Package::fromFolder($this->input->getArgument('path'));
-        $this->config->addPackage($package);
+        $this->config->addPath(
+            $path = $this->input->getArgument('path')
+        );
 
-        $this->io->success('Package loaded successfully.');
+        $this->io->success("Packages matching the path $path will now be loaded by Composer.");
     }
 
 }

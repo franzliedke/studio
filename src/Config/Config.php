@@ -56,12 +56,12 @@ class Config
         return $this->paths;
     }
 
-    public function addPackage(Package $package)
+    public function addPath($path)
     {
-        // Ensure our packages are loaded
+        // ensure paths are loaded
         $this->getPaths();
 
-        $this->paths[] = $package->getPath();
+        $this->paths[] = $path;
         $this->writeToFile(
             $this->serializer->serializePaths($this->paths)
         );
