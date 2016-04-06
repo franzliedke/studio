@@ -40,7 +40,7 @@ class VersionedSerializer implements Serializer
     public function deserializePaths($obj)
     {
         if (!isset($obj['version'])) {
-            $serializer = $this->serializers[$this->default];
+            $serializer = $this->serializers[$this->defaultVersion];
         } else if (array_key_exists(intval($obj['version']), $this->serializers)) {
             $serializer = $this->serializers[$obj['version']];
         } else {
