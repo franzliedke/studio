@@ -17,8 +17,6 @@ use Symfony\Component\Console\Input\InputOption;
 class CreateCommand extends BaseCommand
 {
 
-    protected $config;
-
     protected $partClasses = [
         'Studio\Parts\Base\Part',
         'Studio\Parts\Composer\Part',
@@ -32,13 +30,6 @@ class CreateCommand extends BaseCommand
      */
     protected $partInput;
 
-
-    public function __construct(Config $config)
-    {
-        parent::__construct();
-
-        $this->config = $config;
-    }
 
     protected function configure()
     {
