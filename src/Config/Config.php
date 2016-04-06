@@ -7,57 +7,105 @@ use Studio\Package;
 class Config
 {
     /**
-     * @var StorageInterface
+     * @var Serializer
      */
-    protected $storage;
+    protected $serializer;
 
-    protected $packages;
+    protected $paths;
 
     protected $loaded = false;
 
+    protected $file;
 
-    public function __construct(StorageInterface $storage)
+
+    public function __construct($file, Serializer $serializer)
     {
-        $this->storage = $storage;
+        $this->file = $file;
+        $this->serializer = $serializer;
     }
 
-    public function getPackages()
+    public static function make($file = null)
+    {
+        if (is_null($file)) {
+            $file = getcwd().'/studio.json';
+        }
+
+        return new static(
+            $file,
+            VersionedSerializer
+                ::withDefault(1, new Version1Serializer)
+                ->version(2, new Version2Serializer)
+        );
+    }
+
+    protected function readPaths()
+    {
+        if (!file_exists($this->file)) return [];
+
+        $data = $this->readFromFile();
+        return $this->serializer->deserializePaths($data);
+    }
+
+    public function getPaths()
     {
         if (! $this->loaded) {
-            $this->packages = $this->storage->load();
+            $this->paths = $this->readPaths();
             $this->loaded = true;
         }
 
-        return $this->packages;
+        return $this->paths;
     }
 
-    public function addPackage(Package $package)
+    public function addPath($path)
     {
-        // Ensure our packages are loaded
-        $this->getPackages();
+        // Ensure paths are loaded
+        $this->getPaths();
 
-        $this->packages[$package->getComposerId()] = $package->getPath();
-        $this->storage->store($this->packages);
+        $this->paths[] = $path;
+        $this->dump();
     }
 
     public function hasPackages()
     {
-        // Ensure our packages are loaded
-        $this->getPackages();
+        // Ensure paths are loaded
+        $this->getPaths();
 
-        return ! empty($this->packages);
+        return ! empty($this->paths);
     }
 
     public function removePackage(Package $package)
     {
-        // Ensure our packages are loaded
-        $this->getPackages();
+        // Ensure paths are loaded
+        $this->getPaths();
 
-        $key = $package->getComposerId();
+        $path = $package->getPath();
 
-        if (isset($this->packages[$key])) {
-            unset($this->packages[$key]);
-            $this->storage->store($this->packages);
+        if (($key = array_search($path, $this->paths)) !== false) {
+            unset($this->paths[$key]);
+            $this->dump();
         }
+    }
+
+    protected function dump()
+    {
+        $this->writeToFile(
+            $this->serializer->serializePaths($this->paths)
+        );
+    }
+
+    protected function writeToFile(array $data)
+    {
+        file_put_contents(
+            $this->file,
+            json_encode(
+                $data,
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+            )."\n"
+        );
+    }
+
+    protected function readFromFile()
+    {
+        return json_decode(file_get_contents($this->file), true);
     }
 }

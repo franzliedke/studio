@@ -46,17 +46,16 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
     public function registerStudioPackages(Event $event)
     {
         $this->targetDir = realpath($event->getComposer()->getPackage()->getTargetDir());
-        $studioFile = "{$this->targetDir}/studio.json";
 
-        $config = $this->getConfig($studioFile);
+        $config = Config::make("{$this->targetDir}/studio.json");
 
         if ($config->hasPackages()) {
             $io = $event->getIO();
             $repoManager = $event->getComposer()->getRepositoryManager();
             $composerConfig = $event->getComposer()->getConfig();
 
-            foreach ($config->getPackages() as $package => $path) {
-                $io->writeError("[Studio] Registering package $package with $path");
+            foreach ($config->getPaths() as $path) {
+                $io->writeError("[Studio] Loading path $path");
                 $repoManager->prependRepository(new PathRepository(
                     ['url' => $path],
                     $io,
@@ -64,16 +63,5 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
                 ));
             }
         }
-    }
-
-    /**
-     * Instantiate and return the config object.
-     *
-     * @param string $file
-     * @return Config
-     */
-    protected function getConfig($file)
-    {
-        return new Config(new FileStorage($file));
     }
 }

@@ -24,7 +24,8 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.10.x-dev"
+            "dev-master": "0.10.x-dev",
+            "dev-next": "0.11.x-dev"
         },
         "class": "Studio\\Composer\\StudioPlugin"
     },
