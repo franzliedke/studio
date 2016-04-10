@@ -7,7 +7,6 @@ use Studio\Filesystem\Directory;
 
 abstract class AbstractPart implements PartInterface
 {
-
     /**
      * @var PartInputInterface
      */
@@ -35,5 +34,4 @@ abstract class AbstractPart implements PartInterface
 
         $target->write($targetName, $content);
     }
-
 }

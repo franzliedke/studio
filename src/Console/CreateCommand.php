@@ -16,7 +16,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class CreateCommand extends BaseCommand
 {
-
     protected $partClasses = [
         'Studio\Parts\Base\Part',
         'Studio\Parts\Composer\Part',
@@ -131,5 +130,4 @@ class CreateCommand extends BaseCommand
             return true;
         }
     }
-
 }

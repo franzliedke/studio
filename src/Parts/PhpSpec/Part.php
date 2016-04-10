@@ -7,7 +7,6 @@ use Studio\Parts\AbstractPart;
 
 class Part extends AbstractPart
 {
-
     public function setupPackage($composer, Directory $target)
     {
         if ($this->input->confirm('Do you want to set up PhpSpec as a testing tool?')) {
@@ -29,5 +28,4 @@ class Part extends AbstractPart
             $target->makeDir('spec');
         }
     }
-
 }

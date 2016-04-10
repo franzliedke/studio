@@ -6,7 +6,6 @@ use InvalidArgumentException;
 
 class Package
 {
-
     protected $vendor;
 
     protected $name;
@@ -59,5 +58,4 @@ class Package
     {
         return $this->path;
     }
-
 }

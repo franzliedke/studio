@@ -9,7 +9,6 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class ScrapCommand extends BaseCommand
 {
-
     protected $config;
 
 
@@ -59,5 +58,4 @@ class ScrapCommand extends BaseCommand
             false
         );
     }
-
 }

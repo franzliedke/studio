@@ -6,7 +6,6 @@ use Symfony\Component\Console\Style\StyleInterface;
 
 class ConsoleInput implements PartInputInterface
 {
-
     /**
      * @var StyleInterface
      */
@@ -45,5 +44,4 @@ class ConsoleInput implements PartInputInterface
             throw new \RuntimeException($errorText);
         };
     }
-
 }

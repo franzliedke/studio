@@ -7,7 +7,6 @@ use Studio\Shell\Shell;
 
 class GitRepoCreator implements CreatorInterface
 {
-
     protected $repo;
 
     protected $path;
@@ -35,5 +34,4 @@ class GitRepoCreator implements CreatorInterface
     {
         Shell::run("git clone $this->repo $this->path");
     }
-
 }

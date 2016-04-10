@@ -8,7 +8,6 @@ use Studio\Package;
 
 class SkeletonCreator implements CreatorInterface
 {
-
     /**
      * @var string
      */
@@ -64,5 +63,4 @@ class SkeletonCreator implements CreatorInterface
             )
         );
     }
-
 }

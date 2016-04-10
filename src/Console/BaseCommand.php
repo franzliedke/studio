@@ -10,7 +10,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 abstract class BaseCommand extends Command
 {
-
     /**
      * @var \Symfony\Component\Console\Input\InputInterface
      */
@@ -40,5 +39,4 @@ abstract class BaseCommand extends Command
     }
 
     abstract protected function fire();
-
 }

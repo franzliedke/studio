@@ -7,7 +7,6 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class LoadCommand extends BaseCommand
 {
-
     protected $config;
 
 
@@ -38,5 +37,4 @@ class LoadCommand extends BaseCommand
 
         $this->io->success("Packages matching the path $path will now be loaded by Composer.");
     }
-
 }

@@ -7,7 +7,6 @@ use Symfony\Component\Process\Process;
 
 class Shell
 {
-
     public static function run($task, $directory = null)
     {
         $process = new Process("$task", $directory);
@@ -23,5 +22,4 @@ class Shell
 
         return $process->getOutput();
     }
-
 }

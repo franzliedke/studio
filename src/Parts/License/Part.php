@@ -8,7 +8,6 @@ use Studio\Parts\AbstractPart;
 
 class Part extends AbstractPart
 {
-
     public function setupPackage($composer, Directory $target)
     {
         if ($this->input->confirm('Do you want to configure a license for your project?')) {
@@ -19,5 +18,4 @@ class Part extends AbstractPart
             // 3. Add it to composer.json
         }
     }
-
 }

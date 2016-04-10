@@ -7,7 +7,6 @@ use Studio\Parts\AbstractPart;
 
 class Part extends AbstractPart
 {
-
     public function setupPackage($composer, Directory $target)
     {
         if ($this->input->confirm('Do you want to set up PhpUnit as a testing tool?')) {
@@ -32,5 +31,4 @@ class Part extends AbstractPart
             $this->copyTo(__DIR__ . '/stubs/phpunit.xml', $target);
         }
     }
-
 }
