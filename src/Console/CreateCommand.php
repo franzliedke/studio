@@ -4,7 +4,6 @@ namespace Studio\Console;
 
 use Studio\Parts\ConsoleInput;
 use Studio\Shell\Shell;
-use Studio\Config\Config;
 use Studio\Creator\CreatorInterface;
 use Studio\Creator\GitRepoCreator;
 use Studio\Creator\GitSubmoduleCreator;
