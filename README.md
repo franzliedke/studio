@@ -55,9 +55,11 @@ It contains a list of directories for Studio to load.
 
 Next, if you haven't already done so, make sure you actually require the package in your composer.json:
 
-    $ composer require my/world-domination
+    "require": {
+        "my/world-domination": "dev-master"
+    }
     
-If the package is already in your composer.json, you need to tell Studio to set up the symlinks:
+And finally, tell Studio to set up the symlinks:
 
     $ composer update my/world-domination
 
@@ -73,7 +75,6 @@ This is what will happen under the hood:
    Thus, to your application, these packages will behave just like "normal" Composer packages.
 4. Composer generates proper autoloading rules for the Studio packages.
 5. For non-Studio packages, Composer works as always.
-
 
 **Pro tip:** If you keep all your libraries in one directory, you can let Studio find all of them by using a wildcard:
 
@@ -129,7 +130,7 @@ You can do so with the `scrap` command, passing a path for a Studio-managed pack
 
     $ studio scrap foo
 
-Don't worry - you'll be asked for a confirmation first.
+Don't worry - you'll be asked for confirmation first.
 
 ## License
 
