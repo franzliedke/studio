@@ -34,7 +34,44 @@ Per project: `composer require --dev franzl/studio`
 
 All commands should be run from the root of your project, where the `composer.json` file is located.
 
-### Create a new package skeleton
+### General workflow
+
+Studio packages are local directories, which are symlinked to Composer's `vendor` directory for use in a project.
+
+First, we need to create the local directory for the development package:
+
+    $ studio create foo
+    # or if you want to clone a git repo
+    $ studio create foo --git git@github.com:vendor/package.git
+   
+This will create a package inside the current working directory under directory `foo`.
+
+Now we need to load it using studio, so studio knows to tell Composer that the development package is available locally.
+
+    $ studio load foo
+    
+This command should create a `studio.json` file into the current working directory.
+It contains mappings to package names and local directories containing said packages.
+
+Now that we have studio packages loaded and ready, we need to tell Composer that we want to use said packages in our current project.
+Insert the packages to `composer.json`:
+
+    "require": {
+        "bar/foo": "dev-master"
+    }
+    
+Next we run `composer update` and the following happens:
+
+1.  Composer begins checking dependencies for updates.
+2.  Studio jumps in and informs Composer about the packages defined in the `studio.json` file.
+3.  Composer symlinks studio packages into the `vendor` directory (or in case of installers to their respective installation locations),
+    so they behave like "normal" Composer packages.
+4.  Composer generates proper autoloading rules for the studio packages.
+5.  For non-studio packages Composer works as always.
+
+### Commands
+
+#### Create a new package skeleton
 
     studio create foo/bar
 
@@ -45,19 +82,19 @@ All its dependencies will be available when using Composer.
 During creation, you will be asked a series of questions to configure your skeleton.
 This will include things like configuration for testing tools, Travis CI, and autoloading.
 
-### Manage existing packages by cloning a Git repository
+#### Manage existing packages by cloning a Git repository
 
     studio create bar --git git@github.com:me/myrepo.git
 
 This will clone the given Git repository to the `bar` directory and install its dependencies.
 
-### Import a package from an existing directory
+#### Import a package from an existing directory
 
     studio load baz
 
 This will make sure the package in the `baz` directory will be autoloadable using Composer.
 
-### Remove a package
+#### Remove a package
 
 Sometimes you want to throw away a package.
 You can do so with the `scrap` command, passing a path for a Studio-managed package:
