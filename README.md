@@ -34,46 +34,74 @@ Per project: `composer require --dev franzl/studio`
 
 All commands should be run from the root of your project, where the `composer.json` file is located.
 
-### General workflow
+### Workflow
 
-Studio packages are local directories, which are symlinked to Composer's `vendor` directory for use in a project.
+Typically, you will want to require one of your own Composer packages in an application.
+With Studio, you can pull in your local copy of the package *instead of* the version hosted on Packagist.
+The kicker: You can keep developing your library while you dogfood it, but **you won't need to change your composer.json file**.
+
+#### Loading local packages
+
+To use one of your own libraries within your application, you need to tell Studio where it can locate the library.
+You can do so with the `load` command.
+When Composer resolves its dependencies, Studio will then pitch in and symlink your local directory to Composer's `vendor` directory.
+
+So, to have Studio manage your awesome world domination library, all you have to do is run the following command:
+
+    $ studio load path/to/world-domination
+
+This command should create a `studio.json` file in the current working directory.
+It contains a list of directories for Studio to load.
+
+Next, if you haven't already done so, make sure you actually require the package in your composer.json:
+
+    $ composer require my/world-domination
+    
+If the package is already in your composer.json, you need to tell Studio to set up the symlinks:
+
+    $ composer update my/world-domination
+
+If all goes well, you should now see a brief message along the following as part of Composer's output:
+
+> [Studio] Loading path installer
+
+This is what will happen under the hood:
+
+1. Composer begins checking dependencies for updates.
+2. Studio jumps in and informs Composer to prefer packages from the directories listed in the `studio.json` file over downloading them from Packagist.
+3. Composer symlinks these packages into the `vendor` directory or any other appropriate place (e.g. for [custom installers](https://getcomposer.org/doc/articles/custom-installers.md)).
+   Thus, to your application, these packages will behave just like "normal" Composer packages.
+4. Composer generates proper autoloading rules for the Studio packages.
+5. For non-Studio packages, Composer works as always.
+
+
+**Pro tip:** If you keep all your libraries in one directory, you can let Studio find all of them by using a wildcard:
+
+    $ studio load path/to/my/libraries/*
+
+#### Kickstarting package development
+
+If you haven't started world domination yet, Studio also includes a handy generator for new Composer packages.
+Besides the usual ceremony, it contains several optional components, such as configuration for unit tests, continuous integration on Travis-CI and others.
 
 First, we need to create the local directory for the development package:
 
-    $ studio create foo
+    $ studio create domination
     # or if you want to clone a git repo
-    $ studio create foo --git git@github.com:vendor/package.git
-   
-This will create a package inside the current working directory under directory `foo`.
+    $ studio create domination --git git@github.com:vendor/domination.git
 
-Now we need to load it using studio, so studio knows to tell Composer that the development package is available locally.
+After asking you a series of questions, this will create (or download) a package in the  `domination` subdirectory inside the current working directory.
+There is a good chance that you need a little time to develop this package before publishing it on Packagist.
+Therefore, if you ran this command in a Composer application, Studio will offer you to load your new package immediately.
+This essentially comes down to running `studio load domination`.
 
-    $ studio load foo
-    
-This command should create a `studio.json` file into the current working directory.
-It contains mappings to package names and local directories containing said packages.
+Finally, don't forget to use `composer require` to actually add your package as a dependency.
 
-Now that we have studio packages loaded and ready, we need to tell Composer that we want to use said packages in our current project.
-Insert the packages to `composer.json`:
+### Command Reference
 
-    "require": {
-        "bar/foo": "dev-master"
-    }
-    
-Next we run `composer update` and the following happens:
+#### create: Create a new package skeleton
 
-1.  Composer begins checking dependencies for updates.
-2.  Studio jumps in and informs Composer about the packages defined in the `studio.json` file.
-3.  Composer symlinks studio packages into the `vendor` directory (or in case of installers to their respective installation locations),
-    so they behave like "normal" Composer packages.
-4.  Composer generates proper autoloading rules for the studio packages.
-5.  For non-studio packages Composer works as always.
-
-### Commands
-
-#### Create a new package skeleton
-
-    studio create foo/bar
+    $ studio create foo/bar
 
 This command creates a skeleton for a new Composer package, already filled with some helpful files to get you started.
 In the above example, we're creating a new package in the folder `foo/bar` in your project root.
@@ -82,24 +110,24 @@ All its dependencies will be available when using Composer.
 During creation, you will be asked a series of questions to configure your skeleton.
 This will include things like configuration for testing tools, Travis CI, and autoloading.
 
-#### Manage existing packages by cloning a Git repository
+#### create --git: Manage existing packages by cloning a Git repository
 
-    studio create bar --git git@github.com:me/myrepo.git
+    $ studio create bar --git git@github.com:me/myrepo.git
 
 This will clone the given Git repository to the `bar` directory and install its dependencies.
 
-#### Import a package from an existing directory
+#### load: Import a package from an existing directory
 
-    studio load baz
+    $ studio load baz
 
 This will make sure the package in the `baz` directory will be autoloadable using Composer.
 
-#### Remove a package
+#### scrap: Remove a package
 
 Sometimes you want to throw away a package.
 You can do so with the `scrap` command, passing a path for a Studio-managed package:
 
-    studio scrap foo
+    $ studio scrap foo
 
 Don't worry - you'll be asked for a confirmation first.
 
