@@ -58,7 +58,7 @@ Next, if you haven't already done so, make sure you actually require the package
     "require": {
         "my/world-domination": "dev-master"
     }
-    
+
 And finally, tell Studio to set up the symlinks:
 
     $ composer update my/world-domination
@@ -122,6 +122,13 @@ This will clone the given Git repository to the `bar` directory and install its 
     $ studio load baz
 
 This will make sure the package in the `baz` directory will be autoloadable using Composer.
+
+#### unload: Forget a local directory as package override
+
+    $ studio unload baz
+
+This will remove the `baz` local directory from studio.json and Composer will use the official remote package again.
+Unload does not remove the local package from the filesystem.
 
 #### scrap: Remove a package
 
