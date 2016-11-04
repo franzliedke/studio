@@ -127,8 +127,9 @@ This will make sure the package in the `baz` directory will be autoloadable usin
 
     $ studio unload foo
  
-This will remove the path `foo` from the studio.json configuration, which means the package will not be used
-in the Composer project any more. This does not remove the package contents. See `scrap` for total removal.
+This will remove the path `foo` from the studio.json configuration. This means the package will not be loaded from the local development path anymore but will use your `composer.json` file's repositories definitions instead.
+
+This does not remove the package contents from the file system. See `scrap` for total removal.
 
 You can reload the package using the `load` command.
 
