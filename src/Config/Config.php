@@ -65,6 +65,18 @@ class Config
         $this->dump();
     }
 
+    public function removePath($path)
+    {
+        // Ensure paths are loaded
+        $this->getPaths();
+
+        $this->paths = array_filter($this->paths, function ($existing) use ($path) {
+            return $existing !== $path;
+        });
+
+        $this->dump();
+    }
+
     public function hasPackages()
     {
         // Ensure paths are loaded
