@@ -123,6 +123,15 @@ This will clone the given Git repository to the `bar` directory and install its 
 
 This will make sure the package in the `baz` directory will be autoloadable using Composer.
 
+#### unload: Stop using a studio package with Composer project
+
+    $ studio unload foo
+ 
+This will remove the path `foo` from the studio.json configuration, which means the package will not be used
+in the Composer project any more. This does not remove the package contents. See `scrap` for total removal.
+
+You can reload the package using the `load` command.
+
 #### scrap: Remove a package
 
 Sometimes you want to throw away a package.
