@@ -4,8 +4,7 @@ namespace Studio\Config;
 
 use Studio\Package;
 
-class Config
-{
+class Config {
     /**
      * @var Serializer
      */
@@ -17,17 +16,14 @@ class Config
 
     protected $file;
 
-
-    public function __construct($file, Serializer $serializer)
-    {
-        $this->file = $file;
+    public function __construct($file, Serializer $serializer) {
+        $this->file       = $file;
         $this->serializer = $serializer;
     }
 
-    public static function make($file = null)
-    {
+    public static function make($file = null) {
         if (is_null($file)) {
-            $file = getcwd().'/studio.json';
+            $file = getcwd() . '/studio.json';
         }
 
         return new static(
@@ -38,26 +34,25 @@ class Config
         );
     }
 
-    protected function readPaths()
-    {
-        if (!file_exists($this->file)) return [];
+    protected function readPaths() {
+        if (!file_exists($this->file)) {
+            return [];
+        }
 
         $data = $this->readFromFile();
         return $this->serializer->deserializePaths($data);
     }
 
-    public function getPaths()
-    {
-        if (! $this->loaded) {
-            $this->paths = $this->readPaths();
+    public function getPaths() {
+        if (!$this->loaded) {
+            $this->paths  = $this->readPaths();
             $this->loaded = true;
         }
 
         return $this->paths;
     }
 
-    public function addPath($path)
-    {
+    public function addPath($path) {
         // Ensure paths are loaded
         $this->getPaths();
 
@@ -65,20 +60,9 @@ class Config
         $this->dump();
     }
 
-    public function hasPackages()
-    {
+    public function removePath($path) {
         // Ensure paths are loaded
         $this->getPaths();
-
-        return ! empty($this->paths);
-    }
-
-    public function removePackage(Package $package)
-    {
-        // Ensure paths are loaded
-        $this->getPaths();
-
-        $path = $package->getPath();
 
         if (($key = array_search($path, $this->paths)) !== false) {
             unset($this->paths[$key]);
@@ -86,26 +70,39 @@ class Config
         }
     }
 
-    protected function dump()
-    {
+    public function hasPackages() {
+        // Ensure paths are loaded
+        $this->getPaths();
+
+        return !empty($this->paths);
+    }
+
+    public function removePackage(Package $package) {
+        // Ensure paths are loaded
+        $this->getPaths();
+
+        $path = $package->getPath();
+
+        $this->removePath($path);
+    }
+
+    protected function dump() {
         $this->writeToFile(
             $this->serializer->serializePaths($this->paths)
         );
     }
 
-    protected function writeToFile(array $data)
-    {
+    protected function writeToFile(array $data) {
         file_put_contents(
             $this->file,
             json_encode(
                 $data,
                 JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
-            )."\n"
+            ) . "\n"
         );
     }
 
-    protected function readFromFile()
-    {
+    protected function readFromFile() {
         return json_decode(file_get_contents($this->file), true);
     }
 }

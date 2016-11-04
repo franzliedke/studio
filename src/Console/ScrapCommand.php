@@ -2,25 +2,14 @@
 
 namespace Studio\Console;
 
-use Studio\Package;
-use Studio\Config\Config;
+// use Studio\Package;
+// use Studio\Config\Config;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Filesystem\Filesystem;
 
-class ScrapCommand extends BaseCommand
-{
-    protected $config;
+class ScrapCommand extends UnloadCommand {
 
-
-    public function __construct(Config $config)
-    {
-        parent::__construct();
-
-        $this->config = $config;
-    }
-
-    protected function configure()
-    {
+    protected function configure() {
         $this
             ->setName('scrap')
             ->setDescription('Delete a previously created package skeleton')
@@ -31,8 +20,7 @@ class ScrapCommand extends BaseCommand
             );
     }
 
-    protected function fire()
-    {
+    protected function fire() {
         $path = $this->input->getArgument('path');
 
         if ($this->abortDeletion($path)) {
@@ -40,8 +28,7 @@ class ScrapCommand extends BaseCommand
             return;
         }
 
-        $package = Package::fromFolder($path);
-        $this->config->removePackage($package);
+        parent::fire();
 
         $this->io->note('Removing package...');
         $filesystem = new Filesystem;
@@ -49,11 +36,10 @@ class ScrapCommand extends BaseCommand
         $this->io->success('Package successfully removed.');
     }
 
-    protected function abortDeletion($path)
-    {
+    protected function abortDeletion($path) {
         $this->io->caution("This will delete the entire $path folder and all files within.");
 
-        return ! $this->io->confirm(
+        return !$this->io->confirm(
             "<question>Do you really want to scrap the package at $path?</question> ",
             false
         );
