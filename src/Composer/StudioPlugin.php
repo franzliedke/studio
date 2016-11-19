@@ -7,7 +7,6 @@ use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Repository\PathRepository;
-use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
 use Studio\Config\Config;
 use Studio\Config\FileStorage;
@@ -43,22 +42,21 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
         ];
     }
 
-    public function registerStudioPackages(Event $event)
+    public function registerStudioPackages()
     {
-        $this->targetDir = realpath($event->getComposer()->getPackage()->getTargetDir());
+        $this->targetDir = realpath($this->composer->getPackage()->getTargetDir());
 
         $config = Config::make("{$this->targetDir}/studio.json");
 
         if ($config->hasPackages()) {
-            $io = $event->getIO();
-            $repoManager = $event->getComposer()->getRepositoryManager();
-            $composerConfig = $event->getComposer()->getConfig();
+            $repoManager = $this->composer->getRepositoryManager();
+            $composerConfig = $this->composer->getConfig();
 
             foreach ($config->getPaths() as $path) {
-                $io->writeError("[Studio] Loading path $path");
+                $this->io->writeError("[Studio] Loading path $path");
                 $repoManager->prependRepository(new PathRepository(
                     ['url' => $path],
-                    $io,
+                    $this->io,
                     $composerConfig
                 ));
             }
