@@ -23,11 +23,6 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
      */
     protected $io;
 
-    /**
-     * @var  string|null
-     */
-    protected $targetDir;
-
     public function activate(Composer $composer, IOInterface $io)
     {
         $this->composer = $composer;
@@ -42,24 +37,38 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
         ];
     }
 
+    /**
+     * Register all managed paths with Composer.
+     *
+     * This function configures Composer to treat all Studio-managed paths as local path repositories, so that packages
+     * therein will be symlinked directly.
+     */
     public function registerStudioPackages()
     {
-        $this->targetDir = realpath($this->composer->getPackage()->getTargetDir());
+        $repoManager = $this->composer->getRepositoryManager();
+        $composerConfig = $this->composer->getConfig();
 
-        $config = Config::make("{$this->targetDir}/studio.json");
+        foreach ($this->getManagedPaths() as $path) {
+            $this->io->writeError("[Studio] Loading path $path");
 
-        if ($config->hasPackages()) {
-            $repoManager = $this->composer->getRepositoryManager();
-            $composerConfig = $this->composer->getConfig();
-
-            foreach ($config->getPaths() as $path) {
-                $this->io->writeError("[Studio] Loading path $path");
-                $repoManager->prependRepository(new PathRepository(
-                    ['url' => $path],
-                    $this->io,
-                    $composerConfig
-                ));
-            }
+            $repoManager->prependRepository(new PathRepository(
+                ['url' => $path],
+                $this->io,
+                $composerConfig
+            ));
         }
+    }
+
+    /**
+     * Get the list of paths that are being managed by Studio.
+     *
+     * @return array
+     */
+    private function getManagedPaths()
+    {
+        $targetDir = realpath($this->composer->getPackage()->getTargetDir());
+        $config = Config::make("{$targetDir}/studio.json");
+
+        return $config->getPaths();
     }
 }
