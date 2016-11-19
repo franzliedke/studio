@@ -117,21 +117,23 @@ This will include things like configuration for testing tools, Travis CI, and au
 
 This will clone the given Git repository to the `bar` directory and install its dependencies.
 
-#### load: Import a package from an existing directory
+#### load: Make all packages from the given local path available to Composer
 
     $ studio load baz
 
-This will make sure the package in the `baz` directory will be autoloadable using Composer.
+This will make sure all packages in the `baz` directory (paths with wildcards are supported, too) will be autoloadable using Composer.
 
-#### unload: Stop using a studio package with Composer project
+#### unload: Stop managing a local path
 
     $ studio unload foo
  
-This will remove the path `foo` from the studio.json configuration. This means the package will not be loaded from the local development path anymore but will use your `composer.json` file's repositories definitions instead.
+This will remove the path `foo` from the studio.json configuration file.
+This means any packages in that path will not be available to Composer anymore (unless they are still hosted on Packagist).
 
-This does not remove the package contents from the file system. See `scrap` for total removal.
+This does not remove the package contents from the file system.
+See `scrap` for completely removing a package.
 
-You can reload the package using the `load` command.
+You can reload the path using the `load` command.
 
 #### scrap: Remove a package
 
