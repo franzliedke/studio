@@ -108,6 +108,10 @@ This command creates a skeleton for a new Composer package, already filled with 
 In the above example, we're creating a new package in the folder `foo/bar` in your project root.
 All its dependencies will be available when using Composer.
 
+If you want to have your managed package into a subfolder of your project, simply prepend the path to the package name :
+
+    studio create studio/foo
+
 During creation, you will be asked a series of questions to configure your skeleton.
 This will include things like configuration for testing tools, Travis CI, and autoloading.
 
