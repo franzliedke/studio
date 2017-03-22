@@ -5,11 +5,12 @@ namespace Studio\Composer;
 use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
+use Composer\Json\JsonFile;
+use Composer\Package\Package;
 use Composer\Plugin\PluginInterface;
-use Composer\Repository\PathRepository;
 use Composer\Script\ScriptEvents;
+use Composer\Util\Filesystem;
 use Studio\Config\Config;
-use Studio\Config\FileStorage;
 
 class StudioPlugin implements PluginInterface, EventSubscriberInterface
 {
@@ -32,31 +33,71 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            ScriptEvents::PRE_INSTALL_CMD => 'registerStudioPackages',
-            ScriptEvents::PRE_UPDATE_CMD => 'registerStudioPackages',
+            ScriptEvents::PRE_UPDATE_CMD => 'unlinkStudioPackages',
+            ScriptEvents::PRE_INSTALL_CMD => 'unlinkStudioPackages',
+            ScriptEvents::POST_UPDATE_CMD => 'symlinkStudioPackages',
+            ScriptEvents::POST_INSTALL_CMD => 'symlinkStudioPackages',
+            ScriptEvents::PRE_AUTOLOAD_DUMP => 'symlinkStudioPackages'
         ];
     }
 
     /**
-     * Register all managed paths with Composer.
+     * Symlink all managed paths by studio
      *
-     * This function configures Composer to treat all Studio-managed paths as local path repositories, so that packages
-     * therein will be symlinked directly.
+     * This happens just before the autoload generator kicks in except with --no-autoloader
+     * In that case we create the symlinks on the POST_UPDATE, POST_INSTALL events
+     *
      */
-    public function registerStudioPackages()
+    public function symlinkStudioPackages()
     {
-        $repoManager = $this->composer->getRepositoryManager();
-        $composerConfig = $this->composer->getConfig();
-
         foreach ($this->getManagedPaths() as $path) {
-            $this->io->writeError("[Studio] Loading path $path");
+            $package = $this->createPackageForPath($path);
+            $destination = $this->composer->getInstallationManager()->getInstallPath($package);
 
-            $repoManager->prependRepository(new PathRepository(
-                ['url' => $path],
-                $this->io,
-                $composerConfig
-            ));
+            // Creates the symlink to the package
+            $filesystem = new Filesystem();
+            if (!$filesystem->isSymlinkedDirectory($destination)) {
+                $this->io->writeError("[Studio] Creating symlink to $path for package " . $package->getName());
+
+                // Download the package from the path with the composer downloader
+                $pathDownloader = $this->composer->getDownloadManager()->getDownloader('path');
+                $pathDownloader->download($package, $destination);
+            }
+
         }
+    }
+
+    /**
+     * Removes all symlinks managed by studio
+     *
+     */
+    public function unlinkStudioPackages()
+    {
+        foreach ($this->getManagedPaths() as $path) {
+            $package = $this->createPackageForPath($path);
+            $destination = $this->composer->getInstallationManager()->getInstallPath($package);
+
+            $filesystem = new Filesystem();
+            if ($filesystem->isSymlinkedDirectory($destination)) {
+                $this->io->writeError("[Studio] Removing symlink $path for package " . $package->getName());
+                $filesystem->removeDirectory($destination);
+            }
+        }
+    }
+
+    /**
+     * Creates package from given path
+     *
+     * @param string $path
+     * @return Package
+     */
+    private function createPackageForPath($path)
+    {
+        $packageName = (new JsonFile(realpath($path) . DIRECTORY_SEPARATOR . 'composer.json'))->read()['name'];
+        $package = new Package($packageName, 'dev-master', 'dev-master');
+        $package->setDistUrl($path);
+
+        return $package;
     }
 
     /**
