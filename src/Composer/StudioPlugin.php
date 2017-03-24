@@ -34,7 +34,6 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
     {
         return [
             ScriptEvents::PRE_UPDATE_CMD => 'unlinkStudioPackages',
-//            ScriptEvents::PRE_INSTALL_CMD => 'unlinkStudioPackages',
             ScriptEvents::POST_UPDATE_CMD => 'symlinkStudioPackages',
             ScriptEvents::POST_INSTALL_CMD => 'symlinkStudioPackages',
             ScriptEvents::PRE_AUTOLOAD_DUMP => 'symlinkStudioPackages'
@@ -50,16 +49,16 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
      */
     public function symlinkStudioPackages()
     {
-        $targetDir = realpath($this->composer->getPackage()->getTargetDir()) . '/.studio';
+        $filesystem = new Filesystem();
+        $targetDir = realpath($this->composer->getPackage()->getTargetDir()) . DIRECTORY_SEPARATOR . '.studio';
 
         foreach ($this->getManagedPaths() as $path) {
             $package = $this->createPackageForPath($path);
             $destination = $this->composer->getInstallationManager()->getInstallPath($package);
 
             // Creates the symlink to the package
-            $filesystem = new Filesystem();
-            if (!$filesystem->isSymlinkedDirectory($destination)) {
-                $this->io->writeError("[Studio] Creating symlink to $path for package " . $package->getName());
+            if (!$filesystem->isSymlinkedDirectory($destination) && !$filesystem->isJunction($destination)) {
+                $this->io->writeError("[Studio] Creating link to $path for package " . $package->getName());
 
                 // Create copy of original
                 if (is_dir($destination)) {
@@ -76,10 +75,11 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
 
         }
 
-        copy(
-            realpath($this->composer->getPackage()->getTargetDir()) . DIRECTORY_SEPARATOR . 'studio.json',
-            $targetDir . DIRECTORY_SEPARATOR . 'studio.json'
-        );
+        $filesystem->ensureDirectoryExists('.studio');
+        $studioFile = realpath($this->composer->getPackage()->getTargetDir()) . DIRECTORY_SEPARATOR . 'studio.json';
+        if (file_exists($studioFile)) {
+            copy($studioFile, $targetDir . DIRECTORY_SEPARATOR . 'studio.json');
+        }
     }
 
     /**
@@ -88,16 +88,16 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
      */
     public function unlinkStudioPackages()
     {
-        $targetDir = realpath($this->composer->getPackage()->getTargetDir()) . '/.studio';
+        $filesystem = new Filesystem();
+        $targetDir = realpath($this->composer->getPackage()->getTargetDir()) . DIRECTORY_SEPARATOR  . '.studio';
         $paths = array_merge($this->getManagedPaths(), $this->getPreviouslyManagedPaths());
 
         foreach ($paths as $path) {
             $package = $this->createPackageForPath($path);
             $destination = $this->composer->getInstallationManager()->getInstallPath($package);
 
-            $filesystem = new Filesystem();
-            if ($filesystem->isSymlinkedDirectory($destination)) {
-                $this->io->writeError("[Studio] Removing symlink $path for package " . $package->getName());
+            if ($filesystem->isSymlinkedDirectory($destination) || $filesystem->isJunction($destination)) {
+                $this->io->writeError("[Studio] Removing linked path $path for package " . $package->getName());
                 $filesystem->removeDirectory($destination);
 
                 // If we have an original copy move it back
@@ -133,7 +133,7 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
     private function getManagedPaths()
     {
         $targetDir = realpath($this->composer->getPackage()->getTargetDir());
-        $config = Config::make("{$targetDir}/studio.json");
+        $config = Config::make($targetDir . DIRECTORY_SEPARATOR  . 'studio.json');
 
         return $config->getPaths();
     }
@@ -146,7 +146,7 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
     private function getPreviouslyManagedPaths()
     {
         $targetDir = realpath($this->composer->getPackage()->getTargetDir()) . DIRECTORY_SEPARATOR . '.studio';
-        $config = Config::make("{$targetDir}/studio.json");
+        $config = Config::make($targetDir . DIRECTORY_SEPARATOR  . 'studio.json');
 
         return $config->getPaths();
     }
