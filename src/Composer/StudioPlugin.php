@@ -6,6 +6,7 @@ use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Json\JsonFile;
+use Composer\Package\Loader\ArrayLoader;
 use Composer\Package\Package;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\ScriptEvents;
@@ -118,8 +119,14 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
      */
     private function createPackageForPath($path)
     {
-        $packageName = (new JsonFile(realpath($path) . DIRECTORY_SEPARATOR . 'composer.json'))->read()['name'];
-        $package = new Package($packageName, 'dev-master', 'dev-master');
+        $json = (new JsonFile(realpath($path) . DIRECTORY_SEPARATOR . 'composer.json'))->read();
+        $json['version'] = 'dev-master';
+
+        // branch alias won't work, otherwise the ArrayLoader::load won't return an instance of CompletePackage
+        unset($json['extra']['branch-alias']);
+
+        $loader = new ArrayLoader();
+        $package = $loader->load($json);
         $package->setDistUrl($path);
 
         return $package;
