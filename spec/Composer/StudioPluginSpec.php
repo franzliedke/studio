@@ -3,13 +3,8 @@
 namespace spec\Studio\Composer;
 
 use Composer\Composer;
-use Composer\Downloader\DownloadManager;
-use Composer\Downloader\PathDownloader;
-use Composer\Installer\InstallationManager;
 use Composer\IO\IOInterface;
-use Composer\Package\RootPackage;
 use Composer\Script\ScriptEvents;
-use Composer\Util\Filesystem;
 use PhpSpec\ObjectBehavior;
 
 class StudioPluginSpec extends ObjectBehavior
@@ -43,10 +38,10 @@ class StudioPluginSpec extends ObjectBehavior
         chdir(__DIR__);
 
         // create stubs
-        $filesystem->beADoubleOf(Filesystem::class);
-        $rootPackage->beADoubleOf(RootPackage::class);
-        $composer->beADoubleOf(Composer::class);
-        $io->beADoubleOf(IOInterface::class);
+        $filesystem->beADoubleOf('Composer\Util\Filesystem');
+        $rootPackage->beADoubleOf('Composer\Downloader\PathDownloader');
+        $composer->beADoubleOf('Composer\Composer');
+        $io->beADoubleOf('Composer\IO\IOInterface');
 
         // Construct
         $this->beConstructedWith($filesystem);
@@ -71,10 +66,10 @@ class StudioPluginSpec extends ObjectBehavior
         chdir(__DIR__);
 
         // create stubs
-        $filesystem->beADoubleOf(Filesystem::class);
-        $rootPackage->beADoubleOf(RootPackage::class);
-        $composer->beADoubleOf(Composer::class);
-        $io->beADoubleOf(IOInterface::class);
+        $filesystem->beADoubleOf('Composer\Util\Filesystem');
+        $rootPackage->beADoubleOf('Composer\Downloader\PathDownloader');
+        $composer->beADoubleOf('Composer\Composer');
+        $io->beADoubleOf('Composer\IO\IOInterface');
 
         // Construct
         $this->beConstructedWith($filesystem);
@@ -106,13 +101,13 @@ class StudioPluginSpec extends ObjectBehavior
         chdir(__DIR__ . '/stubs/project-with-path');
 
         // create stubs
-        $filesystem->beADoubleOf(Filesystem::class);
-        $rootPackage->beADoubleOf(RootPackage::class);
-        $composer->beADoubleOf(Composer::class);
-        $io->beADoubleOf(IOInterface::class);
-        $installationManager->beADoubleOf(InstallationManager::class);
-        $downloadManager->beADoubleOf(DownloadManager::class);
-        $pathDownloader->beADoubleOf(PathDownloader::class);
+        $filesystem->beADoubleOf('Composer\Util\Filesystem');
+        $rootPackage->beADoubleOf('Composer\Downloader\PathDownloader');
+        $composer->beADoubleOf('Composer\Composer');
+        $io->beADoubleOf('Composer\IO\IOInterface');
+        $installationManager->beADoubleOf('Composer\Installer\InstallationManager');
+        $downloadManager->beADoubleOf('Composer\Downloader\DownloadManager');
+        $pathDownloader->beADoubleOf('Composer\Downloader\PathDownloader');
 
         // Construct
         //$this->beConstructedWith($filesystem);
@@ -149,12 +144,12 @@ class StudioPluginSpec extends ObjectBehavior
         chdir(__DIR__ . '/stubs/project-with-unload');
 
         // create stubs
-        $filesystem->beADoubleOf(Filesystem::class);
-        $rootPackage->beADoubleOf(RootPackage::class);
-        $composer->beADoubleOf(Composer::class);
-        $io->beADoubleOf(IOInterface::class);
-        $installationManager->beADoubleOf(InstallationManager::class);
-        $pathDownloader->beADoubleOf(PathDownloader::class);
+        $filesystem->beADoubleOf('Composer\Util\Filesystem');
+        $rootPackage->beADoubleOf('Composer\Downloader\PathDownloader');
+        $composer->beADoubleOf('Composer\Composer');
+        $io->beADoubleOf('Composer\IO\IOInterface');
+        $installationManager->beADoubleOf('Composer\Installer\InstallationManager');
+        $pathDownloader->beADoubleOf('Composer\Downloader\PathDownloader');
 
         // Construct
         $this->beConstructedWith($filesystem);
