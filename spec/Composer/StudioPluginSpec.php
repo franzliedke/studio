@@ -39,7 +39,7 @@ class StudioPluginSpec extends ObjectBehavior
 
         // create stubs
         $filesystem->beADoubleOf('Composer\Util\Filesystem');
-        $rootPackage->beADoubleOf('Composer\Downloader\PathDownloader');
+        $rootPackage->beADoubleOf('Composer\Package\RootPackage');
         $composer->beADoubleOf('Composer\Composer');
         $io->beADoubleOf('Composer\IO\IOInterface');
 
@@ -67,7 +67,7 @@ class StudioPluginSpec extends ObjectBehavior
 
         // create stubs
         $filesystem->beADoubleOf('Composer\Util\Filesystem');
-        $rootPackage->beADoubleOf('Composer\Downloader\PathDownloader');
+        $rootPackage->beADoubleOf('Composer\Package\RootPackage');
         $composer->beADoubleOf('Composer\Composer');
         $io->beADoubleOf('Composer\IO\IOInterface');
 
@@ -102,7 +102,7 @@ class StudioPluginSpec extends ObjectBehavior
 
         // create stubs
         $filesystem->beADoubleOf('Composer\Util\Filesystem');
-        $rootPackage->beADoubleOf('Composer\Downloader\PathDownloader');
+        $rootPackage->beADoubleOf('Composer\Package\RootPackage');
         $composer->beADoubleOf('Composer\Composer');
         $io->beADoubleOf('Composer\IO\IOInterface');
         $installationManager->beADoubleOf('Composer\Installer\InstallationManager');
@@ -145,7 +145,7 @@ class StudioPluginSpec extends ObjectBehavior
 
         // create stubs
         $filesystem->beADoubleOf('Composer\Util\Filesystem');
-        $rootPackage->beADoubleOf('Composer\Downloader\PathDownloader');
+        $rootPackage->beADoubleOf('Composer\Package\RootPackage');
         $composer->beADoubleOf('Composer\Composer');
         $io->beADoubleOf('Composer\IO\IOInterface');
         $installationManager->beADoubleOf('Composer\Installer\InstallationManager');
