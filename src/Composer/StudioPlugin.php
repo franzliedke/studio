@@ -3,16 +3,24 @@
 namespace Studio\Composer;
 
 use Composer\Composer;
+use Composer\Downloader\DownloadManager;
 use Composer\EventDispatcher\EventSubscriberInterface;
+use Composer\Installer\InstallationManager;
 use Composer\IO\IOInterface;
 use Composer\Json\JsonFile;
 use Composer\Package\Loader\ArrayLoader;
 use Composer\Package\Package;
+use Composer\Package\RootPackageInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\ScriptEvents;
 use Composer\Util\Filesystem;
 use Studio\Config\Config;
 
+/**
+ * Class StudioPlugin
+ *
+ * @package Studio\Composer
+ */
 class StudioPlugin implements PluginInterface, EventSubscriberInterface
 {
     /**
@@ -25,12 +33,52 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
      */
     protected $io;
 
+    /**
+     * @var Filesystem
+     */
+    protected $filesystem;
+
+    /**
+     * @var DownloadManager
+     */
+    protected $downloadManager;
+
+    /**
+     * @var InstallationManager
+     */
+    protected $installationManager;
+
+    /**
+     * @var RootPackageInterface
+     */
+    protected $rootPackage;
+
+    /**
+     * StudioPlugin constructor.
+     *
+     * @param Filesystem|null $filesystem
+     */
+    public function __construct(Filesystem $filesystem = null)
+    {
+        $this->filesystem = $filesystem ?: new Filesystem();
+    }
+
+    /**
+     * @param Composer $composer
+     * @param IOInterface $io
+     */
     public function activate(Composer $composer, IOInterface $io)
     {
         $this->composer = $composer;
         $this->io = $io;
+        $this->installationManager = $composer->getInstallationManager();
+        $this->downloadManager = $composer->getDownloadManager();
+        $this->rootPackage = $composer->getPackage();
     }
 
+    /**
+     * @return array
+     */
     public static function getSubscribedEvents()
     {
         return [
@@ -50,36 +98,47 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
      */
     public function symlinkStudioPackages()
     {
-        $filesystem = new Filesystem();
-        $targetDir = realpath($this->composer->getPackage()->getTargetDir()) . DIRECTORY_SEPARATOR . '.studio';
-
+        $studioDir = realpath($this->rootPackage->getTargetDir()) . DIRECTORY_SEPARATOR . '.studio';
         foreach ($this->getManagedPaths() as $path) {
             $package = $this->createPackageForPath($path);
-            $destination = $this->composer->getInstallationManager()->getInstallPath($package);
+            $destination = $this->installationManager->getInstallPath($package);
 
             // Creates the symlink to the package
-            if (!$filesystem->isSymlinkedDirectory($destination) && !$filesystem->isJunction($destination)) {
-                $this->io->writeError("[Studio] Creating link to $path for package " . $package->getName());
+            if (!$this->filesystem->isSymlinkedDirectory($destination) &&
+                !$this->filesystem->isJunction($destination)
+            ) {
+                $this->io->write("[Studio] Creating link to $path for package " . $package->getName());
 
-                // Create copy of original
+                // Create copy of original in the `.studio` directory,
+                // we use the original on the next `composer update`
                 if (is_dir($destination)) {
-                    $copyPath = $targetDir . DIRECTORY_SEPARATOR . $package->getName();
-                    $filesystem->ensureDirectoryExists($copyPath);
-                    $filesystem->copyThenRemove($destination, $copyPath);
-                    $this->io->writeError("[Studio] Store original " . $package->getName());
+                    $copyPath = $studioDir . DIRECTORY_SEPARATOR . $package->getName();
+                    $this->filesystem->ensureDirectoryExists($copyPath);
+                    $this->filesystem->copyThenRemove($destination, $copyPath);
                 }
 
-                // Download the package from the path with the composer downloader
-                $pathDownloader = $this->composer->getDownloadManager()->getDownloader('path');
+                // Download the managed package from its path with the composer downloader
+                $pathDownloader = $this->downloadManager->getDownloader('path');
                 $pathDownloader->download($package, $destination);
             }
-
         }
 
-        $filesystem->ensureDirectoryExists('.studio');
-        $studioFile = realpath($this->composer->getPackage()->getTargetDir()) . DIRECTORY_SEPARATOR . 'studio.json';
-        if (file_exists($studioFile)) {
-            copy($studioFile, $targetDir . DIRECTORY_SEPARATOR . 'studio.json');
+        // ensure the `.studio` directory only if we manage paths.
+        // without this check studio will create the `.studio` directory
+        // in all projects where composer is used
+        if (count($this->getManagedPaths())) {
+            $this->filesystem->ensureDirectoryExists('.studio');
+        }
+
+        // if we have managed paths or did have we copy the current studio.json
+        if (count($this->getManagedPaths()) > 0 ||
+            count($this->getPreviouslyManagedPaths()) > 0
+        ) {
+            // If we have the current studio.json copy it to the .studio directory
+            $studioFile = realpath($this->rootPackage->getTargetDir()) . DIRECTORY_SEPARATOR . 'studio.json';
+            if (file_exists($studioFile)) {
+                copy($studioFile, $studioDir . DIRECTORY_SEPARATOR . 'studio.json');
+            }
         }
     }
 
@@ -89,23 +148,23 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
      */
     public function unlinkStudioPackages()
     {
-        $filesystem = new Filesystem();
-        $targetDir = realpath($this->composer->getPackage()->getTargetDir()) . DIRECTORY_SEPARATOR  . '.studio';
-        $paths = array_merge($this->getManagedPaths(), $this->getPreviouslyManagedPaths());
+        $studioDir = realpath($this->rootPackage->getTargetDir()) . DIRECTORY_SEPARATOR  . '.studio';
+        $paths = array_merge($this->getPreviouslyManagedPaths(), $this->getManagedPaths());
 
         foreach ($paths as $path) {
             $package = $this->createPackageForPath($path);
-            $destination = $this->composer->getInstallationManager()->getInstallPath($package);
+            $destination = $this->installationManager->getInstallPath($package);
 
-            if ($filesystem->isSymlinkedDirectory($destination) || $filesystem->isJunction($destination)) {
-                $this->io->writeError("[Studio] Removing linked path $path for package " . $package->getName());
-                $filesystem->removeDirectory($destination);
+            if ($this->filesystem->isSymlinkedDirectory($destination) ||
+                $this->filesystem->isJunction($destination)
+            ) {
+                $this->io->write("[Studio] Removing linked path $path for package " . $package->getName());
+                $this->filesystem->removeDirectory($destination);
 
                 // If we have an original copy move it back
-                $copyPath = $targetDir . DIRECTORY_SEPARATOR . $package->getName();
+                $copyPath = $studioDir . DIRECTORY_SEPARATOR . $package->getName();
                 if (is_dir($copyPath)) {
-                    $filesystem->copyThenRemove($copyPath, $destination);
-                    $this->io->writeError("[Studio] Restoring original " . $package->getName());
+                    $this->filesystem->copyThenRemove($copyPath, $destination);
                 }
             }
         }
@@ -119,7 +178,9 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
      */
     private function createPackageForPath($path)
     {
-        $json = (new JsonFile(realpath($path) . DIRECTORY_SEPARATOR . 'composer.json'))->read();
+        $json = (new JsonFile(
+            realpath($path . DIRECTORY_SEPARATOR . 'composer.json')
+        ))->read();
         $json['version'] = 'dev-master';
 
         // branch alias won't work, otherwise the ArrayLoader::load won't return an instance of CompletePackage
@@ -139,7 +200,7 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
      */
     private function getManagedPaths()
     {
-        $targetDir = realpath($this->composer->getPackage()->getTargetDir());
+        $targetDir = realpath($this->rootPackage->getTargetDir());
         $config = Config::make($targetDir . DIRECTORY_SEPARATOR  . 'studio.json');
 
         return $config->getPaths();
@@ -152,7 +213,7 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
      */
     private function getPreviouslyManagedPaths()
     {
-        $targetDir = realpath($this->composer->getPackage()->getTargetDir()) . DIRECTORY_SEPARATOR . '.studio';
+        $targetDir = realpath($this->rootPackage->getTargetDir()) . DIRECTORY_SEPARATOR . '.studio';
         $config = Config::make($targetDir . DIRECTORY_SEPARATOR  . 'studio.json');
 
         return $config->getPaths();
