@@ -10,7 +10,7 @@ class Part extends AbstractPart
     public function setupPackage($composer, Directory $target)
     {
         if ($this->input->confirm('Do you want to set up PhpSpec as a testing tool?')) {
-            $composer->{'require-dev'}['phpspec/phpspec'] = '~2.0';
+            $composer->{'require-dev'}['phpspec/phpspec'] = '^4.0';
 
             $psr4Autoloading = (array) $composer->autoload->{'psr-4'};
             $namespace = key($psr4Autoloading).'Tests';

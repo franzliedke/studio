@@ -10,7 +10,7 @@ class Part extends AbstractPart
     public function setupPackage($composer, Directory $target)
     {
         if ($this->input->confirm('Do you want to set up PhpUnit as a testing tool?')) {
-            $composer->{'require-dev'}['phpunit/phpunit'] = '4.*';
+            $composer->{'require-dev'}['phpunit/phpunit'] = '^6.3';
 
             // Add autoloading rules for tests
             $psr4Autoloading = (array) $composer->autoload->{'psr-4'};
