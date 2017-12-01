@@ -34,6 +34,7 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
         return [
             ScriptEvents::PRE_INSTALL_CMD => 'registerStudioPackages',
             ScriptEvents::PRE_UPDATE_CMD => 'registerStudioPackages',
+            ScriptEvents::PRE_AUTOLOAD_DUMP => 'registerStudioPackages',
         ];
     }
 
