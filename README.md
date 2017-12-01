@@ -58,7 +58,10 @@ Next, if you haven't already done so, make sure you actually require the package
     "require": {
         "my/world-domination": "dev-master"
     }
-    
+
+Please note that the version you required must be the current branch on your local repository.
+This is important if you don't use `master` as default branch. Make sure to `git checkout master` before running `composer update`.
+
 And finally, tell Studio to set up the symlinks:
 
     $ composer update my/world-domination
@@ -126,7 +129,7 @@ This will make sure all packages in the `baz` directory (paths with wildcards ar
 #### unload: Stop managing a local path
 
     $ studio unload foo
- 
+
 This will remove the path `foo` from the studio.json configuration file.
 This means any packages in that path will not be available to Composer anymore (unless they are still hosted on Packagist).
 
