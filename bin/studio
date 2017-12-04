@@ -23,7 +23,7 @@ use Symfony\Component\Console\Application;
 
 $config = Config::make();
 
-$application = new Application('studio', '0.12.0');
+$application = new Application('studio', '0.13.0');
 $application->add(new CreateCommand);
 $application->add(new LoadCommand($config));
 $application->add(new UnloadCommand($config));
