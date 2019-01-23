@@ -28,7 +28,7 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
     /**
      * @var array
      */
-    protected $pluggedCommands = [
+    const PLUGGED_COMMANDS = [
         'create-project',
         'install',
         'update',
@@ -56,7 +56,7 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
      */
     public function registerStudioPackages(PreCommandRunEvent $event)
     {
-        if (! in_array($event->getCommand(), ['install', 'require', 'update', 'create-project'])) {
+        if (! in_array($event->getCommand(), static::PLUGGED_COMMANDS)) {
             return;
         }
 
