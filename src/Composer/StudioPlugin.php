@@ -5,7 +5,9 @@ namespace Studio\Composer;
 use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
+use Composer\Plugin\PluginEvents;
 use Composer\Plugin\PluginInterface;
+use Composer\Plugin\PreCommandRunEvent;
 use Composer\Repository\PathRepository;
 use Composer\Script\ScriptEvents;
 use Studio\Config\Config;
@@ -23,6 +25,16 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
      */
     protected $io;
 
+    /**
+     * @var array
+     */
+    protected $pluggedCommands = [
+        'create-project',
+        'install',
+        'update',
+        'require'
+    ] ;
+
     public function activate(Composer $composer, IOInterface $io)
     {
         $this->composer = $composer;
@@ -32,8 +44,7 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            ScriptEvents::PRE_INSTALL_CMD => 'registerStudioPackages',
-            ScriptEvents::PRE_UPDATE_CMD => 'registerStudioPackages',
+            PluginEvents::PRE_COMMAND_RUN => 'registerStudioPackages',
         ];
     }
 
@@ -43,8 +54,12 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
      * This function configures Composer to treat all Studio-managed paths as local path repositories, so that packages
      * therein will be symlinked directly.
      */
-    public function registerStudioPackages()
+    public function registerStudioPackages(PreCommandRunEvent $event)
     {
+        if (! in_array($event->getCommand(), ['install', 'require', 'update', 'create-project'])) {
+            return;
+        }
+
         $repoManager = $this->composer->getRepositoryManager();
         $composerConfig = $this->composer->getConfig();
 
