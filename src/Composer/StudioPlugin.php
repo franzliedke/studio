@@ -76,16 +76,16 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
 
         foreach ($this->getManagedPackages() as $package) {
             $original = $installed->findPackage($package->getName(), '*');
+            $originalPackage = $original instanceof AliasPackage ? $original->getAliasOf() : $original;
 
             // Change the source type to path, to prevent 'The package has modified files'
-            $original->setInstallationSource('dist');
-            $original->setDistType('path');
+            if ($originalPackage instanceof CompletePackage) {
+                $originalPackage->setInstallationSource('dist');
+                $originalPackage->setDistType('path');
+            }
 
-            $installationManager->getInstaller($original->getType())
-                ->uninstall($installed, $original);
-
-            $installationManager->getInstaller($package->getType())
-                ->install($studioRepo, $package);
+            $installationManager->getInstaller($original->getType())->uninstall($installed, $original);
+            $installationManager->getInstaller($package->getType())->install($LocalPackagesRepo, $package);
         }
 
         $studioRepo->write();
