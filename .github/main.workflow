@@ -1,6 +1,6 @@
 workflow "CI" {
   on = "push"
-  resolves = ["PhpSpec tests"]
+  resolves = ["Run tests (PHP 7.1)"]
 }
 
 action "Install dependencies" {
@@ -8,8 +8,8 @@ action "Install dependencies" {
   args = "install --prefer-dist"
 }
 
-action "PhpSpec tests" {
-  uses = "actions/bin/sh@master"
+action "Run tests (PHP 7.1)" {
   needs = ["Install dependencies"]
-  args = "vendor/bin/phpspec run"
+  uses = "franzliedke/gh-action-php@master"
+  runs = "php7.1 vendor/bin/phpspec run"
 }
