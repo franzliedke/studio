@@ -29,5 +29,8 @@
         },
         "class": "Studio\\Composer\\StudioPlugin"
     },
-    "bin": ["bin/studio"]
+    "bin": ["bin/studio"],
+    "scripts": {
+        "test": "phpspec run"
+    }
 }
