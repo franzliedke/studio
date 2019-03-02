@@ -1,7 +1,6 @@
 workflow "CI" {
   on = "push"
   resolves = [
-    "Run tests (PHP 5.6)",
     "Run tests (PHP 7.0)",
     "Run tests (PHP 7.1)",
     "Run tests (PHP 7.2)",
@@ -12,12 +11,6 @@ workflow "CI" {
 action "Install dependencies" {
   uses = "pxgamer/composer-action@master"
   args = "install --prefer-dist"
-}
-
-action "Run tests (PHP 5.6)" {
-  uses = "franzliedke/gh-action-php@master"
-  needs = ["Install dependencies"]
-  runs = "php5.6 vendor/bin/phpspec run"
 }
 
 action "Run tests (PHP 7.0)" {
