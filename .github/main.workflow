@@ -9,7 +9,7 @@ action "Install dependencies" {
 }
 
 action "PhpSpec tests" {
-  uses = "sh"
+  uses = "actions/bin/sh@master"
   needs = ["Install dependencies"]
   args = "vendor/bin/phpspec run"
 }
