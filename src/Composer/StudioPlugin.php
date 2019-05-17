@@ -85,7 +85,7 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
             }
 
             $installationManager->getInstaller($original->getType())->uninstall($installed, $original);
-            $installationManager->getInstaller($package->getType())->install($LocalPackagesRepo, $package);
+            $installationManager->getInstaller($package->getType())->install($studioRepo, $package);
         }
 
         $studioRepo->write();
