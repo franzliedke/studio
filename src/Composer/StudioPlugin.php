@@ -28,6 +28,16 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
      */
     protected $io;
 
+    /**
+     * @var bool
+     */
+    protected $studioPackagesLoaded = false;
+
+    /**
+     * @var array
+     */
+    protected $studioPackages = [];
+
     public function activate(Composer $composer, IOInterface $io)
     {
         $this->composer = $composer;
@@ -36,10 +46,11 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
 
     public static function getSubscribedEvents()
     {
-        // TODO: Before update, append Studio path repositories
         return [
-            ScriptEvents::POST_UPDATE_CMD => 'symlinkStudioPackages',
-            ScriptEvents::PRE_AUTOLOAD_DUMP => 'loadStudioPackagesForDump',
+            ScriptEvents::POST_UPDATE_CMD   => 'symlinkStudioPackages',
+            ScriptEvents::POST_INSTALL_CMD  => 'symlinkStudioPackages',
+            ScriptEvents::PRE_AUTOLOAD_DUMP => 'loadStudioPackages',
+            ScriptEvents::POST_AUTOLOAD_DUMP => 'revertStudioPackages',
         ];
     }
 
@@ -51,8 +62,6 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
      */
     public function symlinkStudioPackages()
     {
-        $intersection = $this->getManagedPackages();
-
         // Create symlinks for all left-over packages in vendor/composer/studio
         $destination = $this->composer->getConfig()->get('vendor-dir') . '/composer/studio';
         (new Filesystem())->emptyDirectory($destination);
@@ -65,45 +74,80 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
         // Get local repository which contains all installed packages
         $installed = $this->composer->getRepositoryManager()->getLocalRepository();
 
-        foreach ($intersection as $package) {
+        foreach ($this->getManagedPackages() as $package) {
             $original = $installed->findPackage($package->getName(), '*');
+            $originalPackage = $original instanceof AliasPackage ? $original->getAliasOf() : $original;
 
-            $installationManager->getInstaller($original->getType())
-                ->uninstall($installed, $original);
+            // Change the source type to path, to prevent 'The package has modified files'
+            if ($originalPackage instanceof CompletePackage) {
+                $originalPackage->setInstallationSource('dist');
+                $originalPackage->setDistType('path');
+            }
 
-            $installationManager->getInstaller($package->getType())
-                ->install($studioRepo, $package);
+            $installationManager->getInstaller($original->getType())->uninstall($installed, $original);
+            $installationManager->getInstaller($package->getType())->install($studioRepo, $package);
         }
 
         $studioRepo->write();
-
-        // TODO: Run dump-autoload again
     }
 
-    public function loadStudioPackagesForDump()
+    /**
+     * Swap installed packages with symlinked versions for autoload dump.
+     */
+    public function loadStudioPackages()
     {
-        $localRepo = $this->composer->getRepositoryManager()->getLocalRepository();
-        $intersection = $this->getManagedPackages();
+        $this->registerStudioPackages();
 
-        $packagesToReplace = [];
-        foreach ($intersection as $package) {
-            $packagesToReplace[] = $package->getName();
-        }
+        $this->swapPackages();
+    }
 
-        // Remove all packages with same names as one of symlinked packages
-        $packagesToRemove = [];
-        foreach ($localRepo->getCanonicalPackages() as $package) {
-            if (in_array($package->getName(), $packagesToReplace)) {
-                $packagesToRemove[] = $package;
+    /**
+     * Revert swapped package versions when autoload dump is complete.
+     */
+    public function revertStudioPackages()
+    {
+        $this->swapPackages(true);
+    }
+
+    /**
+     * If Studio packages have not already been loaded, we need to determine
+     * which ones specified in studio.json are installed for this repo.
+     */
+    public function registerStudioPackages()
+    {
+        if(!$this->studioPackagesLoaded) {
+            $this->studioPackagesLoaded = true;
+            
+            $localRepo = $this->composer->getRepositoryManager()->getLocalRepository();
+
+            foreach ($this->getManagedPackages() as $package) {
+                $this->write('Loading package ' . $package->getName());
+                $this->studioPackages[$package->getName()] = [
+                    'studio' => $package
+                ];
+            }
+
+            foreach ($localRepo->getCanonicalPackages() as $package) {
+                if (isset($this->studioPackages[$package->getName()])) {
+                    $this->studioPackages[$package->getName()]['original'] = $package;
+                }
             }
         }
-        foreach ($packagesToRemove as $package) {
-            $localRepo->removePackage($package);
-        }
+    }
 
-        // Add symlinked packages to local repository
-        foreach ($intersection as $package) {
-            $localRepo->addPackage(clone $package);
+    /**
+     * Remove original packages from local repository manager and replace with
+     * studio/symlinked packages.
+     *
+     * @param bool $revert Revert flag will undo this change.
+     */
+    protected function swapPackages($revert = false)
+    {
+        $localRepo = $this->composer->getRepositoryManager()->getLocalRepository();
+
+        foreach ($this->studioPackages as $package) {
+            $localRepo->removePackage($package[$revert ? 'studio' : 'original']);
+            $localRepo->addPackage(clone $package[$revert ? 'original' : 'studio']);
         }
     }
 
@@ -141,16 +185,10 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
         }
 
         // Intersect PathRepository packages with local repository
-        $intersection = $this->getIntersection(
+        return $this->getIntersection(
             $this->composer->getRepositoryManager()->getLocalRepository(),
             $managed
         );
-
-        foreach ($intersection as $package) {
-            $this->write('Loading package ' . $package->getUniqueName());
-        }
-
-        return $intersection;
     }
 
     /**
@@ -168,6 +206,6 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
 
     private function write($msg)
     {
-        $this->io->writeError("[Studio] $msg");
+        $this->io->write("[Studio] $msg");
     }
 }
