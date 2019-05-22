@@ -50,6 +50,12 @@ class CreateCommand extends BaseCommand
                 'gs',
                 InputOption::VALUE_REQUIRED,
                 'If set, this will download the given Git repository (as submodule) instead of creating a new one.'
+            )
+            ->addOption(
+                'options',
+                'go',
+                InputOption::VALUE_REQUIRED,
+                'If set, this will provide options to Git when fetching the repository or submodule.'
             );
     }
 
@@ -87,14 +93,16 @@ class CreateCommand extends BaseCommand
         $path = $input->getArgument('path');
 
         if ($input->getOption('git')) {
-            return new GitRepoCreator($input->getOption('git'), $path);
-        } elseif ($input->getOption('submodule')) {
-            return new GitSubmoduleCreator($input->getOption('submodule'), $path);
-        } else {
-            $creator = new SkeletonCreator($path);
-            $this->installParts($creator);
-            return $creator;
+            return new GitRepoCreator($input->getOption('git'), $path, $input->getOption('options'));
         }
+
+        if ($input->getOption('submodule')) {
+            return new GitSubmoduleCreator($input->getOption('submodule'), $path, $input->getOption('options'));
+        }
+
+        $creator = new SkeletonCreator($path);
+        $this->installParts($creator);
+        return $creator;
     }
 
     protected function installParts(SkeletonCreator $creator)

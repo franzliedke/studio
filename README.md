@@ -117,6 +117,20 @@ This will include things like configuration for testing tools, Travis CI, and au
 
 This will clone the given Git repository to the `bar` directory and install its dependencies.
 
+#### create --submodule: Manage existing packages by loading a Git repository as submodule
+
+    $ studio create bar --submodule git@github.com:me/myrepo.git
+
+This will load the given Git repository to the `bar` directory as a submodule and install its dependencies.
+
+#### create --options: Provide specific options to Git when loading the repository
+
+    $ studio create bar --git git@github.com:me/myrepo.git --options="--single-branch --branch=mybranch"
+    $ studio create bar --submodule git@github.com:me/myrepo.git --options="-b mybranch"
+
+This will load the given Git repository and checkout a specific branch.
+To have an overview of all the options available to you, check `git clone --help` and `git submodule add --help`.
+
 #### load: Make all packages from the given local path available to Composer
 
     $ studio load baz
