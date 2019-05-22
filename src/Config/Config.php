@@ -61,7 +61,9 @@ class Config
         // Ensure paths are loaded
         $this->getPaths();
 
-        $this->paths[] = $path;
+        if (!in_array($path, $this->paths, true)) {
+            $this->paths[] = $path;
+        }
         $this->dump();
     }
 
