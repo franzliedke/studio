@@ -61,9 +61,11 @@ class Config
         // Ensure paths are loaded
         $this->getPaths();
 
-        if (!in_array($path, $this->paths, true)) {
-            $this->paths[] = $path;
-        }
+        $this->paths[] = $path;
+
+        // Ensure there's no duplicates in paths
+        $this->paths = array_unique($this->paths);
+
         $this->dump();
     }
 
