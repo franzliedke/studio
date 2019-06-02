@@ -11,11 +11,14 @@ class GitRepoCreator implements CreatorInterface
 
     protected $path;
 
+    protected $options;
 
-    public function __construct($repo, $path)
+
+    public function __construct($repo, $path, $options = '')
     {
         $this->repo = $repo;
         $this->path = $path;
+        $this->options = $options;
     }
 
     /**
@@ -32,6 +35,6 @@ class GitRepoCreator implements CreatorInterface
 
     protected function cloneRepository()
     {
-        Shell::run("git clone $this->repo $this->path");
+        Shell::run("git clone $this->options $this->repo $this->path");
     }
 }
