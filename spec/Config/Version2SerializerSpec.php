@@ -16,4 +16,9 @@ class Version2SerializerSpec extends ObjectBehavior
     {
         $this->serializePaths(['foo', 'bar'])->shouldReturn(['paths' => ['bar', 'foo']]);
     }
+
+    function it_deduplicates_paths()
+    {
+        $this->serializePaths(['foo', 'bar', 'foo'])->shouldReturn(['paths' => ['bar', 'foo']]);
+    }
 }

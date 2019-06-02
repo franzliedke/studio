@@ -12,6 +12,6 @@ class Version2Serializer implements Serializer
     public function serializePaths(array $paths)
     {
         sort($paths);
-        return ['paths' => array_values($paths)];
+        return ['paths' => array_unique(array_values($paths))];
     }
 }
