@@ -1,5 +1,13 @@
 # studio
 
+* [Installation](#installation)
+* [Usage](#installation)
+  * [Workflow](#workflow)
+  * [Command Reference](#command-reference)
+* [License](#license)
+* [Contributing](#contributing)
+* [Support development](#support-development)
+
 Develop your Composer libraries with style.
 
 This package makes it easy to develop Composer packages while using them.
@@ -167,3 +175,11 @@ This means you can do almost anything with it, as long as the copyright notice a
 
 Feel free to send pull requests or create issues if you come across problems or have great ideas.
 Any input is appreciated!
+
+## Support development
+
+[Tidelift][tidelift] gives software development teams a single source for purchasing and maintaining their software, with professional grade assurances from the experts who know it best, while seamlessly integrating with existing tools.
+
+[Support Studio's ongoing development with a Tidelift subscription!][tidelift]
+
+[tidelift]: https://tidelift.com/subscription/pkg/packagist-franzl-studio?utm_source=packagist-franzl-studio&utm_medium=referral&utm_campaign=readme
