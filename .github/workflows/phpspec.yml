@@ -1,0 +1,15 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install Composer dependencies
+      run: composer install --prefer-dist
+    - name: Run tests (PHP 7.0)
+      run: php7.0 vendor/bin/phpspec run
