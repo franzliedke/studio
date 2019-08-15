@@ -3,13 +3,15 @@ name: CI
 on: [push]
 
 jobs:
-  build:
-
+  phpspec:
     runs-on: ubuntu-latest
-    
+    strategy:
+      matrix:
+        php: [7.1, 7.2, 7.3]
     steps:
     - uses: actions/checkout@v1
     - name: Install Composer dependencies
       run: composer install --prefer-dist
-    - name: Run tests (PHP 7.0)
-      run: php7.0 vendor/bin/phpspec run
+    - name: Run tests
+      run: php${{ matrix.php }} vendor/bin/phpspec run
+
