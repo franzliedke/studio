@@ -10,8 +10,10 @@ jobs:
         php: [7.1, 7.2, 7.3]
     steps:
     - uses: actions/checkout@v1
+    - name: Validate Composer files
+      run: composer validate --no-check-all --strict
     - name: Install Composer dependencies
-      run: composer install --prefer-dist
+      run: composer install --prefer-dist --no-progress --no-suggest
     - name: Run tests
       run: php${{ matrix.php }} vendor/bin/phpspec run
 
