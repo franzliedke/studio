@@ -6,7 +6,7 @@
   * [Command Reference](#command-reference)
 * [License](#license)
 * [Contributing](#contributing)
-* [Support development](#support-development)
+* [For enterprise](#franzl-studio-for-enterprise)
 
 Develop your Composer libraries with style.
 
@@ -176,10 +176,8 @@ This means you can do almost anything with it, as long as the copyright notice a
 Feel free to send pull requests or create issues if you come across problems or have great ideas.
 Any input is appreciated!
 
-## Support development
+## franzl/studio for enterprise
 
-[Tidelift][tidelift] gives software development teams a single source for purchasing and maintaining their software, with professional grade assurances from the experts who know it best, while seamlessly integrating with existing tools.
+Available as part of the Tidelift Subscription
 
-[Support Studio's ongoing development with a Tidelift subscription!][tidelift]
-
-[tidelift]: https://tidelift.com/subscription/pkg/packagist-franzl-studio?utm_source=packagist-franzl-studio&utm_medium=referral&utm_campaign=readme
+The maintainers of franzl/studio and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source dependencies you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact dependencies you use. [Learn more.](https://tidelift.com/subscription/pkg/packagist-franzl-studio?utm_source=packagist-franzl-studio&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
