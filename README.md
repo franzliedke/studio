@@ -6,7 +6,7 @@
   * [Command Reference](#command-reference)
 * [License](#license)
 * [Contributing](#contributing)
-* [For enterprise](#franzl-studio-for-enterprise)
+* [For enterprise](#franzlstudio-for-enterprise)
 
 Develop your Composer libraries with style.
 
