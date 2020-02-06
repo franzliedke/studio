@@ -1,4 +1,5 @@
-studio.json
+/studio.json
+/.studio/
 composer.phar
 composer.lock
 vendor/
