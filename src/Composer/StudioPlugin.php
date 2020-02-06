@@ -12,6 +12,7 @@ use Composer\Package\Loader\ArrayLoader;
 use Composer\Package\Package;
 use Composer\Package\RootPackageInterface;
 use Composer\Plugin\PluginInterface;
+use Composer\Repository\WritableRepositoryInterface;
 use Composer\Script\ScriptEvents;
 use Composer\Util\Filesystem;
 use Studio\Config\Config;
@@ -54,6 +55,11 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
     protected $rootPackage;
 
     /**
+     * @var WritableRepositoryInterface
+     */
+    private $localRepository;
+
+    /**
      * StudioPlugin constructor.
      *
      * @param Filesystem|null $filesystem
@@ -74,6 +80,7 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
         $this->installationManager = $composer->getInstallationManager();
         $this->downloadManager = $composer->getDownloadManager();
         $this->rootPackage = $composer->getPackage();
+        $this->localRepository = $composer->getRepositoryManager()->getLocalRepository();
     }
 
     /**
@@ -100,27 +107,36 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
     {
         $studioDir = realpath($this->rootPackage->getTargetDir()) . DIRECTORY_SEPARATOR . '.studio';
         foreach ($this->getManagedPaths() as $path) {
-            $package = $this->createPackageForPath($path);
-            $destination = $this->installationManager->getInstallPath($package);
+            $resolvedPaths = $this->resolvePath($path);
 
-            // Creates the symlink to the package
-            if (!$this->filesystem->isSymlinkedDirectory($destination) &&
-                !$this->filesystem->isJunction($destination)
-            ) {
-                $this->io->write("[Studio] Creating link to $path for package " . $package->getName());
-
-                // Create copy of original in the `.studio` directory,
-                // we use the original on the next `composer update`
-                if (is_dir($destination)) {
-                    $copyPath = $studioDir . DIRECTORY_SEPARATOR . $package->getName();
-                    $this->filesystem->ensureDirectoryExists($copyPath);
-                    $this->filesystem->copyThenRemove($destination, $copyPath);
+            foreach ($resolvedPaths as $resolvedPath) {
+                $package = $this->createPackageForPath($resolvedPath);
+                if (!$package || !$this->isLocalRepositoryPackage($package)) {
+                    continue;
                 }
 
-                // Download the managed package from its path with the composer downloader
-                $pathDownloader = $this->downloadManager->getDownloader('path');
-                $pathDownloader->download($package, $destination);
+                $destination = $this->installationManager->getInstallPath($package);
+
+                // Creates the symlink to the package
+                if (!$this->filesystem->isSymlinkedDirectory($destination) &&
+                    !$this->filesystem->isJunction($destination)
+                ) {
+                    $this->io->write("[Studio] Creating link to $resolvedPath for package " . $package->getName());
+
+                    // Create copy of original in the `.studio` directory,
+                    // we use the original on the next `composer update`
+                    if (is_dir($destination)) {
+                        $copyPath = $studioDir . DIRECTORY_SEPARATOR . $package->getName();
+                        $this->filesystem->ensureDirectoryExists($copyPath);
+                        $this->filesystem->copyThenRemove($destination, $copyPath);
+                    }
+
+                    // Download the managed package from its path with the composer downloader
+                    $pathDownloader = $this->downloadManager->getDownloader('path');
+                    $pathDownloader->download($package, $destination);
+                }
             }
+
         }
 
         // ensure the `.studio` directory only if we manage paths.
@@ -152,19 +168,27 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
         $paths = array_merge($this->getPreviouslyManagedPaths(), $this->getManagedPaths());
 
         foreach ($paths as $path) {
-            $package = $this->createPackageForPath($path);
-            $destination = $this->installationManager->getInstallPath($package);
+            $resolvedPaths = $this->resolvePath($path);
 
-            if ($this->filesystem->isSymlinkedDirectory($destination) ||
-                $this->filesystem->isJunction($destination)
-            ) {
-                $this->io->write("[Studio] Removing linked path $path for package " . $package->getName());
-                $this->filesystem->removeDirectory($destination);
+            foreach ($resolvedPaths as $resolvedPath) {
+                $package = $this->createPackageForPath($resolvedPath);
+                if ($package == null) {
+                    continue;
+                }
 
-                // If we have an original copy move it back
-                $copyPath = $studioDir . DIRECTORY_SEPARATOR . $package->getName();
-                if (is_dir($copyPath)) {
-                    $this->filesystem->copyThenRemove($copyPath, $destination);
+                $destination = $this->installationManager->getInstallPath($package);
+
+                if ($this->filesystem->isSymlinkedDirectory($destination) ||
+                    $this->filesystem->isJunction($destination)
+                ) {
+                    $this->io->write("[Studio] Removing linked path $resolvedPath for package " . $package->getName());
+                    $this->filesystem->removeDirectory($destination);
+
+                    // If we have an original copy move it back
+                    $copyPath = $studioDir . DIRECTORY_SEPARATOR . $package->getName();
+                    if (is_dir($copyPath)) {
+                        $this->filesystem->copyThenRemove($copyPath, $destination);
+                    }
                 }
             }
         }
@@ -178,19 +202,60 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
      */
     private function createPackageForPath($path)
     {
-        $json = (new JsonFile(
-            realpath($path . DIRECTORY_SEPARATOR . 'composer.json')
-        ))->read();
-        $json['version'] = 'dev-master';
+       $composerJson = $path . DIRECTORY_SEPARATOR . 'composer.json';
 
-        // branch alias won't work, otherwise the ArrayLoader::load won't return an instance of CompletePackage
-        unset($json['extra']['branch-alias']);
+       if (is_readable($composerJson)) {
+           $json = (new JsonFile($composerJson))->read();
+           $json['version'] = 'dev-master';
 
-        $loader = new ArrayLoader();
-        $package = $loader->load($json);
-        $package->setDistUrl($path);
+           // branch alias won't work, otherwise the ArrayLoader::load won't return an instance of CompletePackage
+           unset($json['extra']['branch-alias']);
 
-        return $package;
+           $loader = new ArrayLoader();
+           $package = $loader->load($json);
+           $package->setDistUrl($path);
+
+           return $package;
+       }
+
+       return NULL;
+    }
+
+
+    /**
+     * Resolve path with glob to an array of existing paths.
+     *
+     * @param string $path
+     * @return string[]
+     */
+    private function resolvePath($path)
+    {
+        /** @var string[] $paths */
+        $paths = [];
+
+        $realPaths = glob($path);
+        foreach ($realPaths as $realPath) {
+            if (!in_array($realPath, $paths)) {
+                $paths[] = $realPath;
+            }
+        }
+
+        return $paths;
+    }
+
+    /**
+     * Check if this package is a dependency (transitive or not) of the root package.
+     *
+     * @param Package $package
+     * @return bool
+     */
+    private function isLocalRepositoryPackage($package) {
+        foreach ($this->localRepository->getPackages() as $localRepositoryPackage) {
+            if ($localRepositoryPackage->getName() == $package->getName()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
