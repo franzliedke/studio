@@ -33,8 +33,10 @@ abstract class BaseCommand extends Command
 
         try {
             $this->fire();
+            return 0;
         } catch (Exception $e) {
             $this->io->error($e->getMessage());
+            return 1;
         }
     }
 
