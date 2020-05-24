@@ -17,8 +17,8 @@
         "symfony/process": "^2.5 || ^3.0 || ^4.0 || ^5.0"
     },
     "require-dev": {
-        "composer/composer": "dev-master",
-        "phpspec/phpspec": "~2.3"
+        "composer/composer": "1.10.x-dev",
+        "phpspec/phpspec": "^6.1"
     },
     "replace": {
         "franzliedke/studio": "self.version"
