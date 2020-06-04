@@ -19,6 +19,7 @@ class Version2SerializerSpec extends ObjectBehavior
 
     function it_deduplicates_paths()
     {
-        $this->serializePaths(['foo', 'bar', 'foo'])->shouldReturn(['paths' => ['bar', 'foo']]);
+        // return array should have no gaps
+        $this->serializePaths(['bar', 'foo', 'test', 'foo'])->shouldReturn(['paths' => [0 => 'bar', 1 => 'foo', 2 => 'test']]);
     }
 }
