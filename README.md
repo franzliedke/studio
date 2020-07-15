@@ -16,6 +16,8 @@ Instead of installing the packages you're working on from the Packagist reposito
 Under the hood, it uses Composer's [path repositories](https://getcomposer.org/doc/05-repositories.md#path) to do so.
 As a result, you won't have to develop in the `vendor` directory.
 
+To maintain the integrity of the `composer.lock` file, studio creates a `.studio` directory to keep the original packages from Packagist.
+
 Studio also knows how to configure development tools that might be part of your workflow.
 This includes the following:
 
@@ -73,16 +75,19 @@ And finally, tell Studio to set up the symlinks:
 
 If all goes well, you should now see a brief message along the following as part of Composer's output:
 
-> [Studio] Loading path installer
+> [Studio] Creating link to path/to/world-domination for package my/world-domination 
 
 This is what will happen under the hood:
 
-1. Composer begins checking dependencies for updates.
-2. Studio jumps in and informs Composer to prefer packages from the directories listed in the `studio.json` file over downloading them from Packagist.
-3. Composer symlinks these packages into the `vendor` directory or any other appropriate place (e.g. for [custom installers](https://getcomposer.org/doc/articles/custom-installers.md)).
+1. Studio will restore all original packages from the `.studio` directory that were managed by studio.
+2. Composer begins checking dependencies for updates.
+3. When Composer installed all packages into the `vendor` directory studio jumps in and re installs all packages 
+   listed in the `studio.json` with the [path repository](https://getcomposer.org/doc/05-repositories.md#path) installer. 
+   The original packages are stored in the `.studio` directory.
+4. Composer symlinks these packages into the `vendor` directory or any other appropriate place (e.g. for [custom installers](https://getcomposer.org/doc/articles/custom-installers.md)).
    Thus, to your application, these packages will behave just like "normal" Composer packages.
-4. Composer generates proper autoloading rules for the Studio packages.
-5. For non-Studio packages, Composer works as always.
+5. Composer generates proper autoloading rules for the Studio packages.
+6. For non-Studio packages, Composer works as always.
 
 **Pro tip:** If you keep all your libraries in one directory, you can let Studio find all of them by using a wildcard:
 
