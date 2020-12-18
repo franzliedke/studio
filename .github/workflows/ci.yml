@@ -27,5 +27,5 @@ jobs:
                 run: php vendor/bin/phpspec run
 
             -   name: Run tests
-                run: php${{ matrix.php }} vendor/bin/simple-phpunit
+                run: php${{ matrix.php }} vendor/bin/simple-phpunit --testdox
 

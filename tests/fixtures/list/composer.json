@@ -1,0 +1,12 @@
+{
+	"require": {
+		"franzl/studio": "dev-next"
+	},
+	"minimum-stability": "dev",
+	"repositories": [
+		{
+			"type": "path",
+			"url": "../../../"
+		}
+	]
+}

@@ -9,6 +9,11 @@
             "Studio\\": "src"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Studio\\": "tests"
+        }
+    },
     "require": {
         "php": ">=7.0",
         "composer-plugin-api": "^1.0 || ^2.0",
@@ -17,8 +22,9 @@
         "symfony/process": "^2.5 || ^3.0 || ^4.0 || ^5.0"
     },
     "require-dev": {
-        "composer/composer": "1.10.x-dev",
-        "phpspec/phpspec": "^6.3"
+        "composer/composer": "^2.0",
+        "phpspec/phpspec": "^6.3",
+        "symfony/phpunit-bridge": "^5.2"
     },
     "replace": {
         "franzliedke/studio": "self.version"
