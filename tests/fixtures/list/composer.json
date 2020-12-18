@@ -1,6 +1,6 @@
 {
 	"require": {
-		"franzl/studio": "dev-next"
+		"franzl/studio": "@dev"
 	},
 	"minimum-stability": "dev",
 	"repositories": [

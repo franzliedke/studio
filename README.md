@@ -185,7 +185,7 @@ To add a new test, create your fixtures sub directory in `tests/fixtures`, conta
 ```json
 {
 	"require": {
-		"franzl/studio": "dev-next"
+		"franzl/studio": "@dev"
 	},
 	"minimum-stability": "dev",
 	"repositories": [
