@@ -3,20 +3,29 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  phpspec:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php: [7.2, 7.3, 7.4, 8.0]
-    steps:
-    - uses: actions/checkout@v1
-    - uses: shivammathur/setup-php@v2
-      with:
-        php-version: ${{ matrix.php }}
-    - name: Validate Composer files
-      run: composer validate --no-check-all --strict
-    - name: Install Composer dependencies
-      run: composer install --prefer-dist --no-progress --no-suggest
-    - name: Run tests
-      run: php vendor/bin/phpspec run
+    phpspec:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                php: [7.2, 7.3, 7.4, 8.0]
+
+        steps:
+            -   uses: actions/checkout@v1
+
+            -   uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php }}
+
+            -   name: Validate Composer files
+                run: composer validate --no-check-all --strict
+
+            -   name: Install Composer dependencies
+                run: composer install --prefer-dist --no-progress --no-suggest
+
+            -   name: Run tests
+                run: php vendor/bin/phpspec run
+
+            -   name: Run tests
+                run: php${{ matrix.php }} vendor/bin/simple-phpunit
 
