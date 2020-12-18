@@ -21,7 +21,8 @@ final class CliTest extends TestCase
     {
         $this->composer = "composer";
         $this->fixturesDir = \dirname(__DIR__) . "/fixtures";
-        $this->buildDir = "{$this->fixturesDir}/.build";
+        // allow to set a custom build dir (used in the GitHub CI)
+        $this->buildDir = $_SERVER["STUDIO_TESTS_BUILD_DIR"] ?? "{$this->fixturesDir}/.build";
 
         // Removes the build dir
         $filesystem = new Filesystem();
@@ -114,6 +115,16 @@ final class CliTest extends TestCase
 		// copy files to build dir
 		$filesystem = new Filesystem();
 		$filesystem->mirror($fixturePath, $this->buildDir);
+
+		// add reference to studio
+        $composerJsonPath = "{$this->buildDir}/composer.json";
+        $package = new JsonManipulator(\file_get_contents($composerJsonPath));
+        $package->addSubNode("require", "franzl/studio", "@dev");
+        $package->addRepository("local installation", [
+            "type" => "path",
+            "url" => \dirname(__DIR__, 2)
+        ]);
+        \file_put_contents($composerJsonPath, $package->getContents());
 
 		// install studio
 		$process = new Process([

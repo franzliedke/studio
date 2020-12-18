@@ -180,24 +180,12 @@ Any input is appreciated!
 
 The package provides end-to-end tests to run composer with a local version of `studio` installed.
 
-To add a new test, create your fixtures sub directory in `tests/fixtures`, containing at least of a `composer.json` with this content:
+To add a new test, create your fixtures sub directory in `tests/fixtures`, containing at least an empty `composer.json`. 
+Please note that the required installation changes to locally install `studio` in this test are done automatically.
 
-```json
-{
-	"require": {
-		"franzl/studio": "@dev"
-	},
-	"minimum-stability": "dev",
-	"repositories": [
-		{
-			"type": "path",
-			"url": "../../../"
-		}
-	]
-}
-```
+In a simple test you only need an empty `composer.json`.
 
-Then you can add your test case in `tests/Runner/CliTest`.
+After the setup, you can add your test case in `tests/Runner/CliTest`.
 
 
 ## franzl/studio for enterprise

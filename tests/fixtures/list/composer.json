@@ -1,12 +1,2 @@
 {
-	"require": {
-		"franzl/studio": "@dev"
-	},
-	"minimum-stability": "dev",
-	"repositories": [
-		{
-			"type": "path",
-			"url": "../../../"
-		}
-	]
 }

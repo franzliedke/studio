@@ -41,4 +41,6 @@ jobs:
 
             -   name: Run PHPUnit
                 run: php vendor/bin/simple-phpunit --testdox
+                env:
+                    STUDIO_TESTS_BUILD_DIR: '${{ runner.temp }}/.studio-build'
 
