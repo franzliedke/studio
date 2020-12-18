@@ -18,7 +18,7 @@
     },
     "require-dev": {
         "composer/composer": "1.10.x-dev",
-        "phpspec/phpspec": "^5.1"
+        "phpspec/phpspec": "^6.3"
     },
     "replace": {
         "franzliedke/studio": "self.version"
