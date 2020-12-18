@@ -9,8 +9,8 @@ use Symfony\Component\Process\Process;
 
 final class CliTest extends TestCase
 {
-	private $fixturesDir;
-	private $composer;
+    private $fixturesDir;
+    private $composer;
     private $buildDir;
 
 
@@ -41,99 +41,100 @@ final class CliTest extends TestCase
 
 
     /**
-	 */
-	public function testList ()
-	{
+     */
+    public function testList ()
+    {
         $studioExecutable = $this->installFixture("list");
 
-		$output = (new Process([
+        $output = (new Process([
             $studioExecutable,
-			"list"
-		], $this->buildDir))
-			->mustRun()
-			->getOutput();
+            "list",
+        ], $this->buildDir))
+            ->mustRun()
+            ->getOutput();
 
-		self::assertStringMatchesFormat("studio %d.%d.%d%a", $output);
-	}
+        self::assertStringMatchesFormat("studio %d.%d.%d%a", $output);
+    }
 
 
-	/**
-	 */
-	public function testLoad ()
-	{
-		$studioExecutable = $this->installFixture("load");
+    /**
+     */
+    public function testLoad ()
+    {
+        $studioExecutable = $this->installFixture("load");
 
-		$output = (new Process([
+        (new Process([
             $studioExecutable,
-			"load",
-			"./sub-project"
-		], $this->buildDir))
-			->mustRun()
-			->getOutput();
+            "load",
+            "./sub-project",
+        ], $this->buildDir))
+            ->mustRun()
+            ->getOutput();
 
-		$config = \json_decode(
-			\file_get_contents("{$this->buildDir}/studio.json"),
-			true
-		);
+        $config = \json_decode(
+            \file_get_contents("{$this->buildDir}/studio.json"),
+            true
+        );
 
-		if (\json_last_error())
-		{
-			self::assertTrue(false, "JSON parsing failed");
-		}
+        if (\json_last_error())
+        {
+            self::assertTrue(false, "JSON parsing failed");
+        }
 
-		// should be in the studio.json
-		self::assertContains("./sub-project", $config["paths"]);
+        // should be in the studio.json
+        self::assertContains("./sub-project", $config["paths"]);
 
-		// should install the package
-		// first: add the package manually
-		$composerJsonPath = "{$this->buildDir}/composer.json";
-		$package = new JsonManipulator(\file_get_contents($composerJsonPath));
-		$package->addSubNode("require", "franzl/studio-example", "^1.0");
-		\file_put_contents($composerJsonPath, $package->getContents());
+        // should install the package
+        // first: add the package manually
+        $composerJsonPath = "{$this->buildDir}/composer.json";
+        $package = new JsonManipulator(\file_get_contents($composerJsonPath));
+        $package->addSubNode("require", "franzl/studio-example", "^1.0");
+        \file_put_contents($composerJsonPath, $package->getContents());
 
-		$output = (new Process([
-			$this->composer,
-			"update",
-		], $this->buildDir))
-			->mustRun()
+        $output = (new Process([
+            $this->composer,
+            "update",
+        ], $this->buildDir))
+            ->mustRun()
             ->getErrorOutput();
 
-		self::assertStringContainsString("[Studio] Loading path ./sub-project", $output);
-		self::assertDirectoryExists("{$this->buildDir}/vendor/franzl/studio-example");
-	}
+        self::assertStringContainsString("[Studio] Loading path ./sub-project", $output);
+        self::assertDirectoryExists("{$this->buildDir}/vendor/franzl/studio-example");
+    }
 
 
+    /**
+     * Installs the fixture and returns the path to the studio executable
+     */
+    private function installFixture (string $fixtureName) : string
+    {
+        $fixturePath = "{$this->fixturesDir}/{$fixtureName}";
 
+        // copy files to build dir
+        $filesystem = new Filesystem();
+        $filesystem->mirror($fixturePath, $this->buildDir);
 
-	/**
-	 * Installs the fixture and returns the path to the studio executable
-	 */
-	private function installFixture (string $fixtureName) : string
-	{
-		$fixturePath = "{$this->fixturesDir}/{$fixtureName}";
-
-		// copy files to build dir
-		$filesystem = new Filesystem();
-		$filesystem->mirror($fixturePath, $this->buildDir);
-
-		// add reference to studio
+        // add reference to studio
         $composerJsonPath = "{$this->buildDir}/composer.json";
         $package = new JsonManipulator(\file_get_contents($composerJsonPath));
         $package->addSubNode("require", "franzl/studio", "@dev");
-        $package->addRepository("local installation", [
-            "type" => "path",
-            "url" => \dirname(__DIR__, 2)
-        ]);
+        $package->addRepository(
+            "local installation",
+            [
+                "type" => "path",
+                "url" => \dirname(__DIR__, 2),
+            ]
+        );
         \file_put_contents($composerJsonPath, $package->getContents());
 
-		// install studio
-		$process = new Process([
-			$this->composer,
-			"install"
-		], $this->buildDir);
+        // install studio
+        $process = new Process([
+            $this->composer,
+            "install",
+        ], $this->buildDir);
 
-		$process->mustRun();
+        $process->mustRun();
 
-		return "{$this->buildDir}/bin/studio";
-	}
+        return "{$this->buildDir}/bin/studio";
+    }
 }
