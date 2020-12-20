@@ -10,7 +10,7 @@ class Shell
 {
     public static function run($task, $directory = null)
     {
-        $process = static::makeProcess($task, $directory);
+        $process = self::makeProcess($task, $directory);
         $process->setTimeout(3600);
 
         $process->run();
@@ -24,7 +24,7 @@ class Shell
         return $process->getOutput();
     }
 
-    private function makeProcess($task, $directory)
+    private static function makeProcess($task, $directory)
     {
         $reflection = new ReflectionClass(Process::class);
         $params = $reflection->getConstructor()->getParameters();
