@@ -3,7 +3,6 @@
 namespace spec\Studio\Config;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class Version2SerializerSpec extends ObjectBehavior
 {

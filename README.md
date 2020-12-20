@@ -176,6 +176,18 @@ This means you can do almost anything with it, as long as the copyright notice a
 Feel free to send pull requests or create issues if you come across problems or have great ideas.
 Any input is appreciated!
 
+### Adding Integration Tests
+
+The package provides end-to-end tests to run composer with a local version of `studio` installed.
+
+To add a new test, create your fixtures sub directory in `tests/fixtures`, containing at least an empty `composer.json`. 
+Please note that the required installation changes to locally install `studio` in this test are done automatically.
+
+In a simple test you only need an empty `composer.json`.
+
+After the setup, you can add your test case in `tests/Runner/CliTest`.
+
+
 ## franzl/studio for enterprise
 
 Available as part of the Tidelift Subscription

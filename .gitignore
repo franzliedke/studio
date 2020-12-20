@@ -1,4 +1,5 @@
-studio.json
-composer.phar
-composer.lock
-vendor/
+/.phpunit.result.cache
+/composer.lock
+/composer.phar
+/studio.json
+/vendor

@@ -3,20 +3,44 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  phpspec:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php: [7.2, 7.3, 7.4, 8.0]
-    steps:
-    - uses: actions/checkout@v1
-    - uses: shivammathur/setup-php@v2
-      with:
-        php-version: ${{ matrix.php }}
-    - name: Validate Composer files
-      run: composer validate --no-check-all --strict
-    - name: Install Composer dependencies
-      run: composer install --prefer-dist --no-progress --no-suggest
-    - name: Run tests
-      run: php vendor/bin/phpspec run
+    testsuite:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                # only test the "borders" of supported versions, to minimize the number of test runs
+                # so minimum version, latest 7.x, and 8.x
+                php: ['7.2', '7.4', '8.0']
+                composer: ['v1', 'v2']
+
+        steps:
+            -   uses: actions/checkout@v1
+
+            -   uses: shivammathur/setup-php@v2
+                with:
+                    coverage: "none"
+                    ini-values: "memory_limit=-1"
+                    php-version: ${{ matrix.php }}
+                    tools: "composer:${{ matrix.composer }}"
+
+            -   name: Display versions
+                run: |
+                    php --version
+                    composer --version
+                    php -r 'foreach (get_loaded_extensions() as $extension) echo $extension . " " . phpversion($extension) . PHP_EOL;'
+                    php -i
+
+            -   name: Validate Composer files
+                run: composer validate --no-check-all --strict
+
+            -   name: Install Composer dependencies
+                run: composer install --prefer-dist --no-progress --no-suggest
+
+            -   name: Run PHPSpec
+                run: php vendor/bin/phpspec run
+
+            -   name: Run PHPUnit
+                run: php vendor/bin/simple-phpunit --testdox
+                env:
+                    STUDIO_TESTS_BUILD_DIR: '${{ runner.temp }}/.studio-build'
 
