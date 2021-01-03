@@ -16,7 +16,7 @@ jobs:
     - name: Validate Composer files
       run: composer validate --no-check-all --strict
     - name: Install Composer dependencies
-      run: composer install --prefer-dist --no-progress --no-suggest
+      run: composer install --prefer-dist --no-progress
     - name: Run tests
       run: php vendor/bin/phpspec run
 
