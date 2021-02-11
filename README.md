@@ -86,7 +86,7 @@ This is what will happen under the hood:
 
 **Pro tip:** If you keep all your libraries in one directory, you can let Studio find all of them by using a wildcard:
 
-    $ studio load path/to/my/libraries/*
+    $ studio load 'path/to/my/libraries/*'
 
 #### Kickstarting package development
 
