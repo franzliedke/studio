@@ -76,7 +76,21 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
         $rootPackage = $this->composer->getPackage();
         $targetDir = realpath($rootPackage->getTargetDir());
         $paths = $config->getPaths();
- 
+        $localRepositoryPaths = $this->getLocalRepositoryPaths($rootPackage);
+        $paths = array_merge($paths, $localRepositoryPaths);
+
         return $paths;
+    }
+
+    private function getLocalRepositoryPaths($rootPackage)
+    {
+        $path_filter = function ($repository) {
+            return $repository['type'] === 'path';
+        };
+        $repositories = $rootPackage->getRepositories();
+        $pathRepositories = array_filter($repositories, $path_filter);
+        $localRepositoryPaths = array_column($pathRepositories, 'url');
+            
+        return $localRepositoryPaths;
     }
 }
