@@ -73,9 +73,10 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
      */
     private function getManagedPaths()
     {
-        $targetDir = realpath($this->composer->getPackage()->getTargetDir());
-        $config = Config::make("{$targetDir}/studio.json");
-
-        return $config->getPaths();
+        $rootPackage = $this->composer->getPackage();
+        $targetDir = realpath($rootPackage->getTargetDir());
+        $paths = $config->getPaths();
+ 
+        return $paths;
     }
 }
