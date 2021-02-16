@@ -88,6 +88,8 @@ This is what will happen under the hood:
 
     $ studio load 'path/to/my/libraries/*'
 
+Another option is to add your local development repositories to composer's global configuration file and enable studio to detect this by adding `{"studio":{"local_paths":true}}` to the config inside of `${COMPOSER_HOME}/config.json` the global composer configuration.
+
 #### Kickstarting package development
 
 If you haven't started world domination yet, Studio also includes a handy generator for new Composer packages.
