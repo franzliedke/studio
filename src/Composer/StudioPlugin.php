@@ -75,6 +75,7 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
     {
         $rootPackage = $this->composer->getPackage();
         $targetDir = realpath($rootPackage->getTargetDir());
+        $config = Config::make("{$targetDir}/studio.json");
         $paths = $config->getPaths();
         $localRepositoryPaths = $this->getLocalRepositoryPaths($rootPackage);
         $paths = array_merge($paths, $localRepositoryPaths);
