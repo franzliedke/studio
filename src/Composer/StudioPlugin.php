@@ -73,9 +73,34 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
      */
     private function getManagedPaths()
     {
-        $targetDir = realpath($this->composer->getPackage()->getTargetDir());
+        $rootPackage = $this->composer->getPackage();
+        $targetDir = realpath($rootPackage->getTargetDir());
         $config = Config::make("{$targetDir}/studio.json");
+        $paths = $config->getPaths();
+        $localRepositoryPaths = $this->getLocalRepositoryPaths($rootPackage);
+        $paths = array_merge($paths, $localRepositoryPaths);
+        
+        $composerConfig = $this->composer->getConfig();
+        $studioConfiguration = $composerConfig->get('studio');
+        $addLocalRepositoryPaths = $studioConfiguration['local_paths'] ?? false;
+        if ($addLocalRepositoryPaths)
+        {
+            $localRepositoryPaths = $this->getLocalRepositoryPaths($rootPackage);
+            $paths = array_merge($paths, $localRepositoryPaths);
+        }
 
-        return $config->getPaths();
+        return $paths;
+    }
+
+    private function getLocalRepositoryPaths($rootPackage)
+    {
+        $path_filter = function ($repository) {
+            return $repository['type'] === 'path';
+        };
+        $repositories = $rootPackage->getRepositories();
+        $pathRepositories = array_filter($repositories, $path_filter);
+        $localRepositoryPaths = array_column($pathRepositories, 'url');
+            
+        return $localRepositoryPaths;
     }
 }
