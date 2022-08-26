@@ -23,17 +23,17 @@ class UnloadCommand extends BaseCommand
             ->setDescription('Unload a package path from being managed with Studio')
             ->addArgument(
                 'path',
-                InputArgument::REQUIRED,
-                'The path where the package files are located'
+                InputArgument::IS_ARRAY | InputArgument::REQUIRED,
+                'The path(s) where the package files are located'
             );
     }
 
     protected function fire()
     {
-        $this->config->removePath(
-            $path = $this->input->getArgument('path')
-        );
-
-        $this->io->success("Packages matching the path $path will no longer be loaded by Composer.");
+        foreach ($this->input->getArgument('path') as $path) {
+            $this->config->removePath($path);
+            
+            $this->io->success("Packages matching the path $path will no longer be loaded by Composer.");
+        }
     }
 }
