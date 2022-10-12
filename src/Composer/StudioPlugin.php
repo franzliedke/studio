@@ -58,7 +58,8 @@ class StudioPlugin implements PluginInterface, EventSubscriberInterface
         foreach ($this->getManagedPaths() as $path) {
             $this->io->writeError("[Studio] Loading path $path");
 
-            // In case composer version >= 2.3.0
+            // Composer v2 always exposes the internal loop, so keep reusing it
+            // that is a fixed requirement since Composer >= 2.3
             if (method_exists($this->composer, 'getLoop')) {
                     $repoManager->prependRepository(new PathRepository(
                         ['url' => $path],
