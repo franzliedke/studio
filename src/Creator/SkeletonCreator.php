@@ -49,7 +49,7 @@ class SkeletonCreator implements CreatorInterface
 
     protected function installParts()
     {
-        $config = new \stdClass();
+        $config = (object)[];
 
         foreach ($this->parts as $part) {
             $part->setupPackage($config, $this->directory);

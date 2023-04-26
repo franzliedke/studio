@@ -10,13 +10,13 @@ class Part extends AbstractPart
     public function setupPackage($composer, Directory $target)
     {
         if ($this->input->confirm('Do you want to set up PhpUnit as a testing tool?')) {
-            $composer->{'require-dev'}['phpunit/phpunit'] = '^6.3';
+            $composer->{'require-dev'}['phpunit/phpunit'] = '^9.6 || ^10';
 
             // Add autoloading rules for tests
             $psr4Autoloading = (array) $composer->autoload->{'psr-4'};
             $namespace = key($psr4Autoloading).'Tests';
 
-            @$composer->{'autoload-dev'}->{'psr-4'}->{"$namespace\\"} = 'tests/';
+            $composer->{'autoload-dev'} = (object)['psr-4' => (object)["$namespace\\" => 'tests/']];
 
             // Create an example test file
             $this->copyTo(
