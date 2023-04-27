@@ -9,6 +9,11 @@
             "Studio\\": "src"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "StudioTests\\": "tests"
+        }
+    },
     "require": {
         "php": ">=8.1",
         "composer-plugin-api": "^2.3",
@@ -18,7 +23,9 @@
     },
     "require-dev": {
         "composer/composer": "^2.5",
-        "phpspec/phpspec": "^7.4"
+        "phpspec/phpspec": "^7.4",
+        "phpunit/phpunit": "^9.6 | ^10",
+        "mikey179/vfsstream": "^1.6.11"
     },
     "replace": {
         "franzliedke/studio": "self.version"

@@ -1,3 +1,4 @@
+.phpunit.result.cache
 studio.json
 composer.phar
 composer.lock

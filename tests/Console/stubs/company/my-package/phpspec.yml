@@ -1,0 +1,4 @@
+suites:
+  library_suite:
+    namespace: Company\MyPackage\Tests
+    psr4_prefix: Company\MyPackage\Tests

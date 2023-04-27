@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit bootstrap = "vendor/autoload.php" colors = "true">
+
+    <testsuites>
+        <testsuite name="Project Test Suite">
+            <directory>tests</directory>
+            <exclude>tests/**/stubs</exclude>
+        </testsuite>
+    </testsuites>
+
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="APP_VERSION" value="0.15.0"/>
+    </php>
+
+</phpunit>
