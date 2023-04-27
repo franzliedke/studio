@@ -27,7 +27,7 @@ class Part extends AbstractPart
         // Normalize and store the namespace
         $namespace = str_replace('/', '\\', $namespace);
         $namespace = rtrim($namespace, '\\');
-        @$composer->autoload->{'psr-4'}->{"$namespace\\"} = 'src/';
+        $composer->autoload = (object)['psr-4' => (object)["$namespace\\" => 'src/']];
 
         // Create an example file
         $this->copyTo(
